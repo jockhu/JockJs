@@ -15,8 +15,6 @@ JOCKJS - An Smart JavaScript Library
 - NodeJs v0.8.10
 
 
-
-
  安装使用
 --------------------------------------
 
@@ -46,9 +44,6 @@ node server.js
 (127.0.0.1)可以替换成你指定的域名
 
 
-
-
-
  服务启动配置项
 --------------------------------------
 
@@ -59,8 +54,6 @@ node service.js [[[[port]  debug]  compress]  version]
  - 是否启动调试：  debug      可选
  - 是否启用压缩：  compress   可选
  - 指定版本号：    version    可选：指定某一特定版本
-
-
 
 
  如何使用
@@ -88,9 +81,6 @@ node service.js [[[[port]  debug]  compress]  version]
 
 </script>
 ```
-
-
-
 
  问题反馈
 --------------------------------------
