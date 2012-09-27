@@ -1,5 +1,4 @@
 
-
 /**
  * @name app config for Nodejs framework
  * @version undefined
@@ -11,7 +10,7 @@
  *
  * example
  *
- *         node server.js 8000 true  false    20120101
+ *         node service.js 8000 true  false    20120101
  *                        port debug compress version
  *
  */
