@@ -7,7 +7,8 @@ var http = require("http"),
 function initialize(){
 
     if(process.argv[2] == '--help' || process.argv[2] == 'help'){
-        console.log('\nnode service.js [[[[port]  debug]  compress]  version]\n');
+        console.log('\nnode service.js [[[[port]  debug]  compress]  version]');
+        console.log('\nExample\nnode service.js 8000 true true\n');
         return;
     }
 

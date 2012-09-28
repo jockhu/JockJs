@@ -47,14 +47,22 @@ node service.js
  服务启动配置项
 --------------------------------------
 
-```bash
-node service.js [[[[port]  debug]  compress]  version]
-```
  - 监听端口号：    port       可选：默认监听8000端口
  - 是否启动调试：  debug      可选
  - 是否启用压缩：  compress   可选
  - 指定版本号：    version    可选：指定某一特定版本
 
+```bash
+node service.js [[[[port]  debug]  compress]  version]
+示例
+node service.js 8000 true true
+```
+
+运行以下命令查看帮助
+
+```bash
+node service.js --help
+```
 
  如何使用
 --------------------------------------
