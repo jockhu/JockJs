@@ -19,7 +19,7 @@ NodeJs v0.8.10
  安装使用
 --------------------------------------
 
-[下载](http://nodejs.org//)官方最新稳定版 [NodeJs](http://nodejs.org//) ， 编译安装
+[下载](http://nodejs.org/)官方最新稳定版 [NodeJs](http://nodejs.org/) ， 编译安装
 
 
 安装 uglify-js modules , 进入 NodeJs 安装目录，执行以下命令
