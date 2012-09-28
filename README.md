@@ -11,8 +11,9 @@ JOCKJS - An Smart JavaScript Library
  运行环境
 --------------------------------------
 
-- Linux last edition
-- NodeJs v0.8.10
+Linux last edition
+
+NodeJs v0.8.10
 
 
  安装使用
@@ -27,16 +28,24 @@ JOCKJS - An Smart JavaScript Library
 npm install uglify-js
 ```
 
+建立日志文件目录
+
+```bash
+cd /var/log
+mkdir jockjs
+chown -R user.group jockjs
+```
+
 克隆项目文件
 
 ```bash
 git clone git://github.com/jockhu/jockjs.git
 ```
 
-运行服务，进入 jockjs 目录，执行以下命令
+进入项目 jockjs 目录，执行以下命令，启动服务
 
 ```bash
-node service.js
+node service.js 8000 false true
 ```
 
 完成安装，访问 [http://127.0.0.1:8000/base/20120927001.js](http://127.0.0.1:8000/base/20120927001.js) 测试是否完成
