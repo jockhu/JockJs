@@ -44,7 +44,7 @@ var Router = exports.Router = function(request, response) {
      * Sets root path
      * @const
      */
-    this.root = conf.root || 'err';
+    this.root = conf.root || 'libs';
 
     /**
      * Default handers object
@@ -121,7 +121,7 @@ Router.prototype.getHost = function(){
  *
  * Router.getFilePath()
  *
- * Get file path
+ * Get libs file path
  *
  * @return path
  *
@@ -145,7 +145,7 @@ Router.prototype.getCacheFilePath = function(){
  *
  * Router.getLogFilePath()
  *
- * Get cache file path
+ * Get log file path
  *
  * @return path
  *
