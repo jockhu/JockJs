@@ -36,7 +36,7 @@ git clone git://github.com/jockhu/jockjs.git
 运行服务，进入 jockjs 目录，执行以下命令
 
 ```bash
-node server.js
+node service.js
 ```
 
 完成安装，访问 [http://127.0.0.1:8000/base/20120927001.js](http://127.0.0.1:8000/base/20120927001.js) 测试是否完成
