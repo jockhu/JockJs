@@ -336,12 +336,30 @@
 
 
     /**
+     * 在页面中插入 style 标签，设置特定的样式
+     * @param cssText {String} 样式字符串
+     * @param newStyle {Boolean} 使用新的Style标签添加
+     */
+    function rules(cssText, newStyle){
+        var r = D.createTextNode(cssText),s;
+        if(newStyle || !(s = D.getElementsByTagName('style')[0])){
+            h.appendChild(s = D.createElement('style'));
+            s.type = 'text/css';
+        }
+        if(s.styleSheet)
+            s.styleSheet.cssText += r.nodeValue;
+        else s.appendChild(r);
+    }
+
+
+    /**
      * 构造ready，load，use方法
      */
     _.base = mix(base, {
         ready:ready,
         load:loadResource,
         use:use,
+        rules:rules,
         slice:slice
     });
 
