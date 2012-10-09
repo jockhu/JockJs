@@ -5,7 +5,7 @@ JOCKJS - An Smart JavaScript Library
  简介
 --------------------------------------
 
-安居客自主研发的JS前端框架，特点是模块按需载入，代码精简，高性能，使用非常灵活，模块依赖处理更智能，适合对性能要求较高的网站使用。
+安居客的JS前端框架，特点是模块按需载入，代码精简，高性能，使用非常灵活，模块依赖处理更智能，适合对性能要求较高的网站使用。
 
 
  运行环境
@@ -25,27 +25,20 @@ NodeJs v0.8.10
 安装 uglify-js modules , 进入 NodeJs 安装目录，执行以下命令
 
 ```bash
-npm install uglify-js
-```
-
-建立日志文件目录
-
-```bash
-cd /var/log
-mkdir jockjs
-chown -R user.group jockjs
+$ npm install uglify-js
 ```
 
 克隆项目文件
 
 ```bash
-git clone git://github.com/jockhu/jockjs.git
+$ git clone git://github.com/jockhu/jockjs.git
 ```
 
 进入项目 jockjs 目录，执行以下命令，启动服务
 
 ```bash
-node service.js 8000 false true
+$ cd jockjs
+$ node service.js 8000 false true
 ```
 
 完成安装，访问 [http://127.0.0.1:8000/base/20120927001.js](http://127.0.0.1:8000/base/20120927001.js) 测试是否完成

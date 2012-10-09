@@ -77,7 +77,10 @@ var Response = exports.Response = function(response) {
  */
 Response.prototype.init = function() {
     this.setHeader("Server", "NJ");
-    this.setHeader('Content-Type', this.defMineType);
+    this.setHeader('Content-Type',
+            (conf.transferEncoding != undefined)
+            ? this.defMineType + "; charset=" + conf.transferEncoding
+            : this.defMineType);
 };
 
 
