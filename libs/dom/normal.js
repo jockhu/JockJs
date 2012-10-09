@@ -34,7 +34,8 @@
         create:function(tagName, attributes){
             var el = document.createElement(tagName),attributes = attributes || {};
             return dom(el).setAttrs(attributes);
-        }
+        },
+        normal:{}
     });
 
     J.mix(dom.fn,{
