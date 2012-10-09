@@ -1,9 +1,11 @@
-var server = require("./server");
+(function () {
+    var server = require("./server");
 
-function App(){}
+    var App = exports.App = function App() {
+    };
 
-App.prototype.start = function(){
-    server.initialize();
-}
+    App.prototype.start = function () {
+        server.initialize();
+    };
+})();
 
-exports.App = App;

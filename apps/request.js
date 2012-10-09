@@ -34,12 +34,6 @@ var Request = exports.Request = function(request) {
     this.defTransferEncoding = conf.defTransferEncoding || 'utf8';
 
     /**
-     * Sets enable gzip
-     * @const
-     */
-    this.enableGzip = conf.enableGzip || true;
-
-    /**
      * Default handers object
      * @const
      */
@@ -66,15 +60,6 @@ var Request = exports.Request = function(request) {
  *
  */
 Request.prototype.init = function() {
-    var path = this.getPath(), pathArr = [];
-    path = path.slice(1);
-    pathArr = path.split('&');
-    //console.log(pathArr)
-    path = path.match(/^\/(.*)\//);
-    //console.log(path)
-    //pathArr = path.
-    //this.asset
-
 }
 /**
  *
@@ -86,13 +71,6 @@ Request.prototype.init = function() {
 Request.prototype.get = function(str) {
     return querystring.parse(url_.parse(this.req.url).query)[str];
 }
-
-/**
- *
- * Request.url
- *
- */
-//Request.prototype.url = this.req.url;
 
 /**
  *
