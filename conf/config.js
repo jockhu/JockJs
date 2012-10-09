@@ -58,7 +58,7 @@ exports.cache = 'cache';
  * Default log path
  * @const
  */
-exports.logPath = '/var/log/jockjs';
+exports.logPath = 'log';
 
 /**
  * Default enable access log
