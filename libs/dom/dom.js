@@ -38,8 +38,8 @@
         s:function (selector) {
             return new select(selector, (this[0].nodeType === 1) ? this[0] : d);
         },
-        get:function(){
-            return this[0]
+        get:function(index){
+            return this[index||0]
         },
         length:0,
         splice:[].splice
