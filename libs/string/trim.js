@@ -18,5 +18,5 @@
  *
  */
 String.prototype.trim = function () {
-    return this.replace(/(^[\s\t\xa0\u3000]+)|([\u3000\xa0\s\t]$)/g,'');
+    return this.replace(/(^[\s\t\xa0\u3000]+)|([\u3000\xa0\s\t]+$)/g,'');
 };

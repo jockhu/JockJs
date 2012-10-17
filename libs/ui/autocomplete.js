@@ -9,14 +9,22 @@
  *
  */
 
-/// require('lang.merge');
+/// require('ui.ui');
+/// require('ua.opera');
+/// require('event');
+/// require('string.trim');
 
 /**
  * @namespace J.ui.autocomplete
+ *
+ * @require dom.dom, event.on, event.un, lang.each
+ *
+ *
  */
 
 (function (J, W, D, U) {
 
-    
+    //CODING...
+
 
 })(J, window, document, undefined);
