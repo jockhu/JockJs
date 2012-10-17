@@ -15,13 +15,7 @@
 
 (function(dom, document){
 
-    J.mix(dom,{
-        create:function(tagName, attributes){
-            var el = document.createElement(tagName),attributes = attributes || {};
-            return dom(el).setAttrs(attributes);
-        },
-        normal:{}
-    });
+    dom.normal = {};
 
     J.mix(dom.fn,{
 

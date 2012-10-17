@@ -10,7 +10,7 @@
  */
 
 
-(function (J, w, doc) {
+(function (J, W, D) {
 
     J.add('event', {
         KEY_BACKSPACE:8,
@@ -39,11 +39,16 @@
         getKeyCode:function (event) {
             return event.which || event.keyCode;
         }
-
     });
 
-    var E = J.event, ME = E.ME, ML = E.ML, U= 'unload', docEl = doc.documentElement, isIE = /msie (\d+\.\d+)/i.test(navigator.userAgent);
+    var E = J.event, dom = J.dom, ME = E.ME, ML = E.ML, U= 'unload', docEl = D.documentElement, isIE = /msie (\d+\.\d+)/i.test(navigator.userAgent);
     E.MMES = 'on'+ ME in docEl && 'on'+ ML in docEl;
+
+    dom && dom.fn && J.each('on un once fire'.split(' '), function(i, v){
+        dom.fn[v] = function(){
+            E[v].apply(null, [this.get()].concat(J.slice.call(arguments)));
+        }
+    });
 
     function extend(event, element, data, preventDefault, stopPropagation) {
         if (!event) return false;
@@ -67,7 +72,7 @@
 
         );
 
-        if (data) event.data = data;
+        if (data !== undefined) event.data = data;
 
         if (preventDefault) event[d]();
         if (stopPropagation) event[p]();
@@ -97,7 +102,7 @@
 
     // 释放内存，防止造成内存泄漏
     if (isIE)
-        w.attachEvent('on'+U, function(){
+        W.attachEvent('on'+U, function(){
             var e, E = J.event, a = E.CACHE, l = a.length, dE = 'detachEvent';
             while (l--) {
                 e = a[l];
@@ -110,6 +115,6 @@
             }
         });
     if (!isIE)
-        w.addEventListener(U, function () {}, false);
+        W.addEventListener(U, function () {}, false);
 
 })(J, window, document);

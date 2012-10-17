@@ -23,20 +23,76 @@
  */
 (function (W) {
 
-    var cdn = '__HOST__', debug = true, _ = {}, mix = function (t, s) {
-            for (var p in s) {
-                if (s.hasOwnProperty(p)) {
-                    t[p] = s[p];
-                }
+    var hs = 'hasOwnProperty', mix = function (l, r, w) {
+            if(w){
+                var N = {};
+                for (var n in l){ if (l[hs](n))N[n] = l[n]}
+                for (var n in r){if (r[hs](n))N[n] = r[n]}
+                return N;
             }
-            return t;
-        }, base = {},slice = Array.prototype.slice;
+            for (var p in r) {if (r[hs](p)) {l[p] = r[p];} }return l;
+        }, base = {},slice = Array.prototype.slice,cdn = '__HOST__', _ = {};
 
     /**
      * 解决js压缩变量不压缩问题
      * 所有用eval的地方需要用J.eval来调用
      */
     _.eval = W.eval;
+
+
+    var version = '__VERSION__', readyList = [], callList = [], modules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, A = arguments, U = A[2],  s = A[1].split('|'), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = setTimeout, conf = {
+            v:version, u:cdn, m:'/', c:'utf-8'
+        }, S = D[rS], Dt = D[aT], c2t = {}, IS = {};
+
+
+    /**
+     * 遍历Object中所有元素。
+     *
+     * @param {Object} object 需要遍历的Object
+     * @param {Function} callback 对每个Object元素进行调用的函数
+     * @return {Object} 原对象
+     *
+     */
+    function each(object, callback) {
+        var name, i = 0, length = object.length, isObj = length === U;
+        if (isObj) {
+            for (I in object) {
+                if (callback.call(object[ I ], I, object[ I ]) === false) {
+                    break;
+                }
+            }
+        } else {
+            for (; i < length;) {
+                if (callback.call(object[ i ], i, object[ i++ ]) === false) {
+                    break;
+                }
+            }
+        }
+        return object;
+    }
+
+    function T( o ) {
+        return o === null ? String( o ) : c2t[ Object.prototype.toString.call(o) ] || U;
+    }
+
+    (function(){
+        each("Boolean Number String Function Array Date RegExp Object".split(" "), function(i, name) {
+            var lowerName = name.toLowerCase();
+            c2t[ "[object " + name + "]" ] = lowerName;
+            IS['is'+name] = function(o){
+                return T(o) === lowerName
+            };
+        });
+        IS.isWindow = function( object ) {
+            return object && IS.isObject(object) && "setInterval" in object;
+        };
+        IS.isUndefined = function( object ){
+            return object === U;
+        }
+    })();
+
+
+
 
     /**
      * 提供自定义模块支持， 注：为保证自定义模块名称与核心类库模块名称冲突，
@@ -59,7 +115,7 @@
          * @param {Object | Function} object 模块对象
          */
         add:function (module, object) {
-            if('function' === typeof object){
+            if(IS.isFunction(object)){
                 _[module] = object;
                 return;
             }
@@ -68,10 +124,6 @@
             _.mix(_[module] = _[module] || {}, m);
         }
     });
-
-    var version = '__VERSION__', readyList = [], callList = [], modules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, s = arguments[1].split('|'), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = setTimeout, conf = {
-            v:version, u:cdn, m:'/', c:'utf-8'
-        }, S = D[rS], Dt = D[aT];
 
     /**
      * 绑定Ready事件
@@ -120,9 +172,7 @@
      */
     function ready(callback) {
         bindReady();
-        if (isReady)
-            callback.call(); else
-            readyList.push(callback);
+        isReady ? callback.call() : readyList.push(callback);
     }
 
     /**
@@ -153,7 +203,7 @@
      */
     function loadResource(url, type, charset, callback) {
         var n;
-        if ('function' === typeof type) {
+        if ('function' === T(type)) {
             callback = type;
         }
         type = /\.(js|css)/g.exec(url.toLowerCase()), type = type ? type[1] : 'js';
@@ -266,17 +316,17 @@
      * @return null
      */
     function use(require, callback, delay) {
-        var mod, mods = [], modts = [], type = typeof require, i = 0,l, module;
-        if (type === 'object') {
+        var mod, mods = [], i = 0,l, module;
+        if (IS.isArray(require)) {
             while ((mod = require[i++])) {
                 mods.push(mod)
             }
-        } else if (type === 'string') {
+        } else if (IS.isString(require)) {
             mods.push(require)
         }
         mods = filterModules(mods);
         if (mods.length) {
-            if (delay && 'number' === typeof delay) {
+            if (delay && IS.isNumber(delay)) {
                 ready(function () {
                     sT(function () {
                         var m, M = [], i = 0;
@@ -346,9 +396,7 @@
             h.appendChild(s = D.createElement('style'));
             s.type = 'text/css';
         }
-        if(s.styleSheet)
-            s.styleSheet.cssText += r.nodeValue;
-        else s.appendChild(r);
+        s.styleSheet ? s.styleSheet.cssText += r.nodeValue : s.appendChild(r);
     }
 
 
@@ -360,6 +408,8 @@
         load:loadResource,
         use:use,
         rules:rules,
+        each:each,
+        type:T,
         slice:slice
     });
 
@@ -367,10 +417,11 @@
      * 提升 base 子集
      */
     mix(_, base);
+    mix(_, IS);
 
     W['J'] = _;
 
-})(window, 'addEventListener|removeEventListener|attachEvent|detachEvent|DOMContentLoaded|onreadystatechange|readyState|complete|load');
+})(window, 'addEventListener|removeEventListener|attachEvent|detachEvent|DOMContentLoaded|onreadystatechange|readyState|complete|load', undefined);
 
 
 

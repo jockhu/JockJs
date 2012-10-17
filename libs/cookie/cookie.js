@@ -13,10 +13,6 @@
  *
  */
 
-/// require('lang.isString');
-
-
-
 (function(J){
     var doc = document,
         millisecond = 24 * 60 * 60 * 1000,
@@ -30,7 +26,7 @@
      * @return {Boolean} 是否合法的cookie值
      */
     function validString(val){
-        return J.isString(val) && '' !== val;
+        return J.type(val) === 'string' && '' !== val;
     }
 
     /**

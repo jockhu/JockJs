@@ -16,7 +16,7 @@
 /**
  * @namespace J.dom
  */
-(function (J, D, U) {
+(function (J, W, D, U) {
 
     function g(id) {
         return new elem(id);
@@ -27,12 +27,13 @@
     }
 
     function elem(id) {
-        if (id = ( id && id.nodeType ) ? id : D.getElementById(id)) {
-            this[0] = id;
-            this.length = 1;
-        }
         if (id === "body" && D.body) {
             this[0] = D.body;
+            this.length = 1;
+            return this
+        }
+        if (id = ( id && id.nodeType ) ? id : D.getElementById(id)) {
+            this[0] = id;
             this.length = 1;
         }
         return this;
@@ -94,6 +95,7 @@
         };
     })();
 
+
     var fn = elem.prototype = {
         show:function () {
             this.get().style.display = '';
@@ -122,14 +124,14 @@
                 return this;
             }
             key = Fix_ATTS[key] || key;
-            if (value === U) return element.getAttribute(key); else {
-                if (typeof value === 'string') element.setAttribute(key, value); else {
-                    for (var key in value) {
-                        this.attr(key, value[key]);
-                    }
+            if (J.isString(key))
+                if (value === U) return element.getAttribute(key); else element.setAttribute(key, value);
+            else {
+                for (var k in key) {
+                    this.attr(k, key[k]);
                 }
-                return this
             }
+            return this;
         },
 
         /**
@@ -173,7 +175,7 @@
             style = style == float ? cssFloat : style;
             var value = element.style[style];
             if (!value || value == 'auto') {
-                var css = document.defaultView.getComputedStyle(element, null);
+                var css = D.defaultView.getComputedStyle(element, null);
                 value = css ? css[style] : null;
             }
             if (style == opacity) return value ? parseFloat(value) : 1.0;
@@ -182,7 +184,7 @@
 
         setStyle: function(styles) {
             var element = this.get(), elementStyle = element.style, match;
-            if ("string" === typeof styles) {
+            if (J.isString(styles)) {
                 element.style.cssText += ';' + styles;
                 styles.indexOf(opacity) > 0 && element.setOpacity(styles.match(/opacity:\s*(\d?\.?\d*)/)[1]);
             }
@@ -211,13 +213,13 @@
         },
 
         appendTo:function(element){
-            (typeof element === 'string' ? dom(element) : element).append(this.get());
+            (J.isString(element) ? dom(element) : element).append(this.get());
             return this;
         },
 
         html:function(html){
             var self = this.get();
-            if(html){
+            if(!J.isUndefined(html)){
                 self.innerHTML = html;
                 return this;
             }
@@ -233,14 +235,178 @@
         s:function (selector) {
             return new select(selector, (this[0].nodeType === 1) ? this[0] : D);
         },
+
         get:function (index) {
             return this[index || 0]
         },
+
+        width:function(){
+            return getWH(this).width
+        },
+
+        height:function(){
+            return getWH(this).height
+        },
+
+        offset:function() {
+            var target = this.get();
+            if(target && target.offsetLeft == undefined) {
+                target = target.parentNode;
+            }
+            var pageCoord = (function(element){
+                var coord = {
+                    x : 0,
+                    y : 0
+                };
+                while(element) {
+                    coord.x += element.offsetLeft;
+                    coord.y += element.offsetTop;
+                    element = element.offsetParent;
+                }
+                return coord;
+            })(target);
+            return {
+                x : pageCoord.x,
+                y : pageCoord.y
+            };
+        },
+
+        /**
+         * 将目标元素添加到基准元素之后
+         * @param element 插入的元素
+         */
+        insertAfter:function (element) {
+            var self = this.get(), parent = self.parentNode;
+            if(parent){
+                parent.insertBefore(element.nodeType === 1 ? element : element.get(), self.nextSibling);
+            }
+            return this;
+        },
+
+        /**
+         * 将目标元素添加到基准元素之前
+         * @param element 插入的元素
+         */
+        insertBefore:function (element) {
+            var self = this.get(), parent = self.parentNode;
+            if(parent){
+                parent.insertBefore(element.nodeType === 1 ? element : element.get(), self);
+            }
+            return this;
+        },
+
+        /**
+         * 获取目标元素的第一个元素节点
+         */
+        first:function () {
+            return matchNode(this.get(), 'nextSibling', 'firstChild');
+        },
+
+        /**
+         * 获取目标元素的最后一个元素节点
+         */
+        last:function () {
+            return matchNode(this.get(), 'previousSibling', 'lastChild');
+        },
+
+        /**
+         * 获取目标元素的下一个兄弟元素节点
+         */
+        next:function () {
+            return matchNode(this.get(), 'nextSibling', 'nextSibling');
+        },
+
+        /**
+         * 获取目标元素的上一个兄弟元素节点
+         */
+        prev:function () {
+            return matchNode(this.get(), 'previousSibling', 'previousSibling');
+        },
+
+        up: function (expression, index) {
+            var element = this.get();
+            if (arguments.length == 0) return dom(element.parentNode);
+            var element = this.get(), i = 0, isNumber = J.isNumber(expression), R;
+            isNumber || (R = expression.match(/^(\.)?(\w+)$/));
+            while (element = element['parentNode']) {
+                if (element.nodeType == 1)
+                    if(isNumber && i == expression) return g(element);
+                    else if(R && ((R[1] && R[2] == element.className) || R[2].toUpperCase() == element.tagName)) return g(element);
+                i++;
+            }
+            return null;
+        },
+
+        down: function (expression, index) {
+            var element = this.get();
+            if (arguments.length == 0) return this.first();
+            return new J.isNumber(expression) ? select('*', element).eq(expression) : select(expression, element);
+        },
+
+        eq:function (i) {
+            i = i || 0;
+            return g(this[ i === -1 ? this.length - 1 : i ]);
+        },
+
+        empty:function(){
+            return this.html('');
+        },
+
         length:0,
         splice:[].splice
     };
-    dom.fn = fn;
-    dom.s = s;
+
+    J.mix(dom,{
+        create:create,
+        fn:fn,
+        s:s
+    });
+
+    function matchNode(element, direction, start) {
+        for (var node = element[start]; node; node = node[direction]) {
+            if (node.nodeType == 1) {
+                return dom(node);
+            }
+        }
+        return null;
+    }
+
+    function getWH(element) {
+        var el = element.get(), dis;
+
+        if(dis = element.visible()){
+            return { width:el.offsetWidth, height:el.offsetHeight }
+        }
+
+        var sty = el.style, stys, wh, ostys = {
+            visibility:sty.visibility,
+            position:sty.position,
+            display:dis
+        };
+
+        stys = {
+            visibility:'hidden',
+            display:'block'
+        };
+        if (pos !== 'fixed')
+            stys.position = 'absolute';
+
+        element.setStyle(stys);
+
+        wh = {
+            width:el.offsetWidth,
+            height:el.offsetHeight
+        };
+
+        element.setStyle(ostys);
+
+        return wh;
+    }
+
+    function create(tagName, attributes){
+        var el = D.createElement(tagName), jEl = dom(el);
+        return (attributes === U) ? jEl : jEl.attr(attributes);
+    }
 
     /**
      * class 选择器查询
@@ -262,8 +428,8 @@
             // 初始化tagName参数
             tagName = match[4] ? match[4].toUpperCase() : '';
             // 查询元素
-            if (gC = element[C]) {
-                elements = gC(match[2]);
+            if (element[C]) {
+                elements = element[C](match[2]);
                 len = elements.length;
                 for (i = 0; i < len; i++) {
                     node = elements[i];
@@ -308,8 +474,9 @@
 
     J.mix(J, {
         dom:dom,
+        create:create,
         s:s,
         g:g
     });
 
-})(J, document, undefined);
+})(J, window, document, undefined);

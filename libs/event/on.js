@@ -12,7 +12,6 @@
 
 /// require('event.event');
 
-
 /**
  * 为目标元素添加事件监听器
  * @name J.event.on
@@ -33,7 +32,9 @@
  */
 
 J.on = J.event.on = function (element, type, handler, data, preventDefault, stopPropagation) {
-    element = typeof element === 'string' ? document.getElementById(element) : element.length ? element.get(0) : element;
+    element = 'string' === J.type(element) ? document.getElementById(element) : element.length ? element.get(0) : element;
+
+    if(!element) return false;
 
     var E = J.event, a = E.CACHE, responder = E.fix(element, type, handler, data, preventDefault, stopPropagation), isFire = type.indexOf(':') > -1, aD = 'addEventListener', aT = 'attachEvent',
         DA = E.DA, LO = E.LO;

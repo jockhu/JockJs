@@ -14,11 +14,6 @@
  */
 
 
-/// require('lang.isFunction');
-/// require('lang.each');
-
-
-
 (function(J){
 
     /**
@@ -46,15 +41,15 @@
         timeout: '',
         type : ''
     }, encode = encodeURIComponent, request = function(url, options){
-        var o = J.mix({}, _options || {}), eventHandlers = {}, xhr, timer;
-        if(J.isFunction(options)){
+        var o = J.mix({}, _options || {}), eventHandlers = {}, xhr, timer, fn = 'function';
+        if(J.type(options) === fn){
             o.onSuccess = options;
         }else{
             o = J.mix(o, options || {});
             o.method = o.method.toUpperCase();
         }
 
-        J.each("onSuccess onFailure onBeforerequest onTimeout".split(' '), function(k){
+        J.each("onSuccess onFailure onBeforerequest onTimeout".split(' '), function(i, k){
             eventHandlers[k] = o[k];
         });
 
@@ -69,7 +64,7 @@
 
             headers['X-Request-With'] = 'XMLHttpRequest';
 
-            if ( data && typeof data !== "string" )
+            if ( data && J.type(data) !== "string" )
                 data = param(data);
             if ( method == "GET" ) {
                 if (data) {
@@ -91,7 +86,7 @@
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             }
 
-            for (key in headers) {
+            for (var key in headers) {
                 if (headers.hasOwnProperty(key)) {
                     xhr.setRequestHeader(key, headers[key]);
                 }
@@ -124,7 +119,7 @@
             };
 
             for ( var j in a )
-                add( j, J.isFunction(a[j]) ? a[j]() : a[j] );
+                add( j, J.type(a[j]) === fn ? a[j]() : a[j] );
             return s.join("&").replace(/%20/g, "+");
         }
 

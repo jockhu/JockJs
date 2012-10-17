@@ -30,7 +30,7 @@
  */
 
 J.un = J.event.un = function (element, type, handler) {
-    element = typeof element === 'string' ? document.getElementById(element) : element.length ? element.get(0) : element;
+    element = 'string' === J.type(element) ? document.getElementById(element) : element.length ? element.get(0) : element;
 
     var E = J.event, a = E.CACHE,  DA = E.DA, LO = E.LO, l = a.length, e, elmAll = !type, typeAll = !handler, isFire , rE = 'removeEventListener', dT = 'detachEvent';
 
