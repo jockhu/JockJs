@@ -47,6 +47,7 @@
     dom && dom.fn && J.each('on un once fire'.split(' '), function(i, v){
         dom.fn[v] = function(){
             E[v].apply(null, [this.get()].concat(J.slice.call(arguments)));
+            return this;
         }
     });
 
@@ -72,8 +73,6 @@
 
         );
 
-        if (data !== undefined) event.data = data;
-
         if (preventDefault) event[d]();
         if (stopPropagation) event[p]();
 
@@ -91,7 +90,7 @@
                 if (!(a != b && !(a.contains ? a.contains(b) : !!(a.compareDocumentPosition(b) & 16) ))) return false;
             }
             extend(event, element, data, preventDefault, stopPropagation);
-            handler.call(element, event);
+            handler.call(element, event, data);
         };
     }
 

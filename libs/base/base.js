@@ -122,6 +122,9 @@
             var m = {};
             _.mix(m, object);
             _.mix(_[module] = _[module] || {}, m);
+        },
+        ua:{
+            ua:navigator.userAgent
         }
     });
 
@@ -397,6 +400,7 @@
             s.type = 'text/css';
         }
         s.styleSheet ? s.styleSheet.cssText += r.nodeValue : s.appendChild(r);
+        return s;
     }
 
 

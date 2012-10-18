@@ -9,6 +9,4 @@
  *
  */
 
-/// require('ua.ua');
-
 J.ua.webkit = /webkit/i.test(J.ua.ua);

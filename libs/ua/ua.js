@@ -8,6 +8,3 @@
  * @date: 2012/02/08
  *
  */
-J.add('ua',{
-   ua:navigator.userAgent
-});

@@ -9,6 +9,4 @@
  *
  */
 
-/// require('ua.ua');
-
 J.ua.opera = /opera(\/| )(\d+(\.\d+)?)(.+?(version\/(\d+(\.\d+)?)))?/i.test(J.ua.ua) ?  + ( RegExp.$6 || RegExp.$2 ) : undefined;

@@ -2,11 +2,11 @@
  * Aifang Javascript Framework.
  * Copyright 2012 ANJUKE Inc. All rights reserved.
  *
- * @path: ua/firefox.js
+ * @path: tpl/tpl.js
  * @author: Jock
  * @version: 1.0.0
- * @date: 2012/02/08
+ * @date: 2012/10/18
  *
  */
 
-J.ua.firefox = /firefox\/(\d+\.\d+)/i.test(J.ua.ua) ? + RegExp.$1 : undefined;
+J.add('tpl');

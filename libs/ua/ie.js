@@ -9,6 +9,4 @@
  *
  */
 
-/// require('ua.ua');
-
 J.ua.ie = /msie (\d+\.\d+)/i.test(J.ua.ua) ? (document.documentMode || + RegExp.$1) : undefined;

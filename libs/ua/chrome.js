@@ -9,6 +9,4 @@
  *
  */
 
-/// require('ua.ua');
-
 J.ua.chrome = /chrome\/(\d+\.\d+)/i.test(J.ua.ua) ? + RegExp.$1 : undefined;
