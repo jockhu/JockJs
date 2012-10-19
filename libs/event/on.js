@@ -32,7 +32,7 @@
  */
 
 J.on = J.event.on = function (element, type, handler, data, preventDefault, stopPropagation) {
-    element = 'string' === J.type(element) ? document.getElementById(element) : element.length ? element.get(0) : element;
+    element = J.isString(element) ? document.getElementById(element) : element.length ? element.get(0) : element;
 
     if(!element) return false;
 

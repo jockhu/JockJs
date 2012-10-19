@@ -16,7 +16,7 @@
 /**
  * @namespace J.dom
  */
-(function (J, W, D, U) {
+(function (J, W, D) {
 
     function g(id) {
         return new elem(id);
@@ -39,7 +39,7 @@
         return this;
     }
 
-    var T = 'getElementsByTagName', C = 'getElementsByClassName', dom = g, float = 'float', cssFloat = 'cssFloat', opacity = 'opacity',
+    var T = 'getElementsByTagName', C = 'getElementsByClassName', dom = g, float = 'float', cssFloat = 'cssFloat', opacity = 'opacity', U = J.isUndefined,
 
     Fix_ATTS = (function () {
         var result = {};
@@ -65,16 +65,16 @@
         }
 
         function inputSelector(element, value) {
-            if (value === U)  return element.checked ? element.value : null;
+            if (U(value))  return element.checked ? element.value : null;
             else element.checked = !!value;
         }
 
         function valueSelector(element, value) {
-            if (value === U) return element.value; else element.value = value;
+            if (U(value)) return element.value; else element.value = value;
         }
 
         function select(element, value) {
-            if (value === U)
+            if (U(value))
                 return selectOne(element);
         }
 
@@ -84,7 +84,7 @@
         }
 
         function optionValue(opt) {
-            return (opt['value'] !== U) ? opt.value : opt.text;
+            return (!U(opt['value'])) ? opt.value : opt.text;
         }
 
         return {
@@ -120,12 +120,12 @@
         attr:function (key, value) {
             var element = this.get();
             if ('style' === key) {
-                if (value === U) return element.style.cssText; else element.style.cssText = value;
+                if (U(value)) return element.style.cssText; else element.style.cssText = value;
                 return this;
             }
             key = Fix_ATTS[key] || key;
             if (J.isString(key))
-                if (value === U) return element.getAttribute(key); else element.setAttribute(key, value);
+                if (U(value)) return element.getAttribute(key); else element.setAttribute(key, value);
             else {
                 for (var k in key) {
                     this.attr(k, key[k]);
@@ -229,7 +229,7 @@
         val:function(value){
             var element = this.get(), V = valFix[element.tagName.toLowerCase() || element.type];
             V = V ? V (element, value) : null;
-            return (value === U) ? V : this;
+            return (U(value)) ? V : this;
         },
 
         s:function (selector) {
@@ -250,7 +250,7 @@
 
         offset:function() {
             var target = this.get();
-            if(target && target.offsetLeft == undefined) {
+            if(target && J.isUndefined(target.offsetLeft)) {
                 target = target.parentNode;
             }
             var pageCoord = (function(element){
@@ -405,7 +405,7 @@
 
     function create(tagName, attributes){
         var el = D.createElement(tagName), jEl = dom(el);
-        return (attributes === U) ? jEl : jEl.attr(attributes);
+        return (U(attributes)) ? jEl : jEl.attr(attributes);
     }
 
     /**
@@ -479,4 +479,4 @@
         g:g
     });
 
-})(J, window, document, undefined);
+})(J, window, document);

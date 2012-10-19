@@ -17,7 +17,7 @@
  * @function
  */
 Function.prototype.bind = function(context) {
-    if (arguments.length < 2 && arguments[0] === undefined) return this;
+    if (arguments.length < 2 && J.isUndefined(arguments[0])) return this;
     var m = this, args = J.slice.call(arguments, 1);
     return function() {
         var a = J.merge(args, arguments);

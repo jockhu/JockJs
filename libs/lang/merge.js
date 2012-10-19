@@ -28,12 +28,12 @@
 J.merge = J.lang.merge = function( first, second ) {
 	var i = first.length,
 	    j = 0;
-	if ( typeof second.length === "number" ) {
+	if ( J.isNumber(second.length) ) {
 	    for ( var l = second.length; j < l; j++ ) {
 	        first[ i++ ] = second[ j ];
 	    }
 	} else {
-	    while ( second[j] !== undefined ) {
+	    while ( !J.isUndefined(second[j]) ) {
 	        first[ i++ ] = second[ j++ ];
 	    }
 	}

@@ -26,7 +26,7 @@
      * @return {Boolean} 是否合法的cookie值
      */
     function validString(val){
-        return J.type(val) === 'string' && '' !== val;
+        return J.isString(val) && '' !== val;
     }
 
     /**

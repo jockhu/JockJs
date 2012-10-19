@@ -19,7 +19,7 @@
 Function.prototype.delay = function(timeout){
     var m = this, args = J.slice.call(arguments, 1);
     timeout = timeout * 1000;
-    return window.setTimeout(function() {
+    return setTimeout(function() {
         return m.apply(m, args);
     }, timeout);
 };
