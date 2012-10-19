@@ -121,7 +121,7 @@
             }
             var m = {};
             _.mix(m, object);
-            _.mix(_[module] = _[module] || {}, m);
+            return _.mix(_[module] = _[module] || {}, m);
         },
         ua:{
             ua:navigator.userAgent

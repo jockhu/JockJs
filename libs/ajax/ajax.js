@@ -8,27 +8,27 @@
  *
  * @path: ajax/ajax.js
  * @author: Jock
- * @version: 1.0.0
- * @date: 2012/01/30
+ * @version: 1.0.1
+ * @date: 2012/10/19
  *
  */
 
 
-(function(J){
+(function(J, W){
 
     /**
      * 初始配置
      * @param {String} method                 请求发送的类型。默认为GET
      * @param {Boolean} async                 是否异步请求。默认为true（异步）
-     * @return {String | Object} data         需要发送的数据。
-     * @return {Object} headers               要设置的头信息
+     * @param {String | Object} data         需要发送的数据。
+     * @param {Object} headers               要设置的头信息
      * @return {Function} onSuccess           请求成功时触发，      function(XMLHttpRequest xhr, string responseText)
      * @return {Function} onFailure           请求失败时触发，      function(XMLHttpRequest xhr)
      * @return {Function} onBeforerequest     发送请求之前触发，    function(XMLHttpRequest xhr)
      * @return {Function} onTimeout           发送请求超时触发，    function(XMLHttpRequest xhr)
-     * @return {String} cache                 是否需要缓存，默认为true（缓存）
+     * @param {String} cache                 是否需要缓存，默认为true（缓存）
      */
-    var _options = {
+    var defaultOpts = {
         method : 'GET',
         async  : true,
         data   : '',
@@ -40,38 +40,39 @@
         cache : true,
         timeout: '',
         type : ''
-    }, encode = encodeURIComponent, request = function(url, options){
-        var o = J.mix({}, _options || {}), eventHandlers = {}, xhr, timer, fn = 'function';
-        if(J.type(options) === fn){
-            o.onSuccess = options;
-        }else{
-            o = J.mix(o, options || {});
-            o.method = o.method.toUpperCase();
-        }
+    }, encode = encodeURIComponent, ajax;
+
+    function Ajax(url, options, mode){
+
+        var opts,eventHandlers = {}, timer;
+
+        options = J.isFunction(options) ? {onSuccess : options} : options;
+        opts = J.mix(defaultOpts, options || {}, true);
+        ( mode == 'getJSON' ) ? opts.type = 'JSON' : opts.method = mode.toUpperCase();
 
         J.each("onSuccess onFailure onBeforerequest onTimeout".split(' '), function(i, k){
-            eventHandlers[k] = o[k];
+            eventHandlers[k] = opts[k];
         });
 
         try {
-
-            xhr     = getXHR(),
-            method  = o.method,
-            async   = o.async,
-            headers = o.headers,
-            data    = o.data;
-            timeout = o.timeout;
+            var xhr = getXHR(),
+            method  = opts.method,
+            async   = opts.async,
+            headers = opts.headers,
+            data    = opts.data,
+            timeout = opts.timeout,
+            cache   = opts.cache;
 
             headers['X-Request-With'] = 'XMLHttpRequest';
 
-            if ( data && J.type(data) !== "string" )
+            if ( data && !J.isString(data) )
                 data = param(data);
             if ( method == "GET" ) {
                 if (data) {
                     url += (url.indexOf('?') > 0 ? '&' : '?') + data;
                     data = null;
                 }
-                if(!o['cache'])
+                if(!cache)
                     url += (url.indexOf('?') > 0 ? '&' : '?') + 'J' + +new Date() + '=0';
             }
 
@@ -116,10 +117,9 @@
             var s = [ ];
             function add( key, value ){
                 s[ s.length ] = encode(key) + '=' + encode(value);
-            };
-
+            }
             for ( var j in a )
-                add( j, J.type(a[j]) === fn ? a[j]() : a[j] );
+                add( j, J.isFunction(a[j]) ? a[j]() : a[j] );
             return s.join("&").replace(/%20/g, "+");
         }
 
@@ -157,7 +157,7 @@
          * @return {XMLHttpRequest} XMLHttpRequest对象
          */
         function getXHR() {
-            if (window.ActiveXObject) {
+            if (W.ActiveXObject) {
                 try {
                     return new ActiveXObject("Msxml2.XMLHTTP");
                 } catch (e) {
@@ -166,7 +166,7 @@
                     } catch (e) {}
                 }
             }
-            if (window.XMLHttpRequest) {
+            if (W.XMLHttpRequest) {
                 return new XMLHttpRequest();
             }
         }
@@ -182,7 +182,7 @@
             var handler = eventHandlers[type];
             // 不对事件类型进行验证
             if (handler) {
-                if (o.timeout) {
+                if (opts.timeout) {
                     clearTimeout(timer);
                 }
                 if (type != 'onSuccess') {
@@ -194,18 +194,67 @@
                     } catch(error) {
                         return handler(xhr);
                     }
-                    handler( o.type === 'JSON' ? (new Function("return " + xhr.responseText))() : xhr.responseText );
+                    handler( opts.type === 'JSON' ? (new Function("return " + xhr.responseText))() : xhr.responseText );
                 }
             }
         }
 
         return xhr;
 
-    };
+    }
 
+    ajax = J.add('ajax');
 
-    J.add('ajax',{
-        request : request
+    J.each('get post getJSON'.split(' '), function(i, v){
+        /**
+         *
+         * 发送一个get请求
+         *
+         * @grammar J.get(url,options)
+         *    options.onSuccess
+         *    options.onFailure
+         *    options.onBeforerequest
+         *
+         *
+         * @name J.ajax.get
+         * @param {String} url 请求的url
+         * @param {Object|Function} options 参数配置或者回调函数
+         * @return {Object}
+         *
+         */
+
+        /**
+         * 发送一个post请求
+         *
+         * @grammar J.post(url,options)
+         *    options.onSuccess
+         *    options.onFailure
+         *    options.onBeforerequest
+         *
+         * @name J.ajax.post
+         * @param {String} url 请求的url
+         * @param {Object|Function} 参数配置或者回调函数
+         * @return {Object}
+         *
+         */
+
+        /**
+         * 发送一个get请求，返回JSON格式数据
+         *
+         * @grammar J.getJSON(url,options)
+         *
+         * @name J.ajax.getJSON
+         * @param {String} url 请求的url
+         * @param {Object|Function} 参数配置或者回调函数
+         * @return {Object}
+         *
+         */
+
+        ajax[v] = function(url, options){
+            return new Ajax( url, options, v )
+        }
     });
 
-})(J);
+    J.mix(J,ajax);
+
+})(J, window);
