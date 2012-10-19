@@ -323,10 +323,10 @@
             return matchNode(this.get(), 'previousSibling', 'previousSibling');
         },
 
-        up: function (expression, index) {
+        up: function (expression) {
             var element = this.get();
             if (arguments.length == 0) return dom(element.parentNode);
-            var element = this.get(), i = 0, isNumber = J.isNumber(expression), R;
+            var i = 0, isNumber = J.isNumber(expression), R;
             isNumber || (R = expression.match(/^(\.)?(\w+)$/));
             while (element = element['parentNode']) {
                 if (element.nodeType == 1)
@@ -337,7 +337,7 @@
             return null;
         },
 
-        down: function (expression, index) {
+        down: function (expression) {
             var element = this.get();
             if (arguments.length == 0) return this.first();
             return new J.isNumber(expression) ? select('*', element).eq(expression) : select(expression, element);
