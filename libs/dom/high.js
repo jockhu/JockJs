@@ -17,7 +17,7 @@
 
 
     J.mix(dom.fn,{
-        //TODO
+        //TODO etc clone ...
     });
 
 
