@@ -87,7 +87,7 @@ node service.js --help
         T.html('DOM 事件操作完成');
     });
 
-}.require(['dom.normal','event.on']));
+}.require(['dom.dom','event.on']));
 
 </script>
 ```
