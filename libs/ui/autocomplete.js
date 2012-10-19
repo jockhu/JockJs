@@ -15,7 +15,7 @@
 /**
  * @namespace J.ui.autocomplete
  *
- * @require dom.dom, event.on
+ * @require dom.dom, event.on, event.un
  *
  *
  */
@@ -53,7 +53,7 @@
     function Autocomplete(el, options) {
 
         var disabled = false, el = J.g(el), selectedIndex = -1, currentValue = el.val().trim(), CACHED = [], opts, tId, aId, mainId, isShow = false, divs,
-            mainContainer, container, valueChangeTimer = null, ignoreValueChange = false, intervalTimer = null ;
+            mainContainer, container, valueChangeTimer = null, ignoreValueChange = false, intervalTimer = null, tplName, cssKeyName;
 
         (function(){
             el.attr('autocomplete', 'off');
@@ -62,6 +62,8 @@
             aId = 'Autocomplete_' + tId;
             mainId = 'AutocompleteMain_' + tId;
             opts.width || (opts.width = el.width()-2);
+            tplName = opts.tpl || 'def';
+            cssKeyName = 'Autocomplete_' + tplName;
 
             buildMain();
             buildCss();
@@ -71,22 +73,22 @@
         })();
 
         function getId(){
-            return tId ? tId : Math.floor(Math.random() * 0x100000).toString(16);
+            return tId ? tId : Math.floor(Math.random() * 0x1000000).toString(16);
         }
 
         function buildMain(){
             J.create('div', {
                 id:mainId,
                 style:'position:absolute;z-index:9999;'
-            }).html('<div id="' + aId + '" style="display:none; width:'+opts.width+'px"></div>').appendTo('body');
+            }).html('<div class="'+cssKeyName+'" id="' + aId + '" style="display:none; width:'+opts.width+'px"></div>').appendTo('body');
             mainContainer = J.g(mainId);
             container = J.g(aId);
         }
 
         function buildCss(){
-            var tplName = opts.tpl || 'def', tpl = J['tpl'], tplCss = ((tpl && tpl[tplName]) || "|{border:1px solid #ddd;border-top:0;background:#FFF;cursor:pointer;text-align:left;overflow:hidden;}| .ui_sel{background:#FFFFBB;}| .ui_item{border-top:1px solid #ddd;height:25px;line-height:25px;padding:0 10px;white-space:nowrap;overflow:hidden;font-size:12px}");
-            if(!Autocomplete.tpl['#'+aId])
-                Autocomplete.tpl['#'+aId] = J.rules(tplCss.replace(/\|/g,'#'+aId), true);
+            var tpl = J['tpl'], tplCss = ((tpl && tpl[tplName]) || "|{border:1px solid #ddd;border-top:0;background:#FFF;cursor:pointer;text-align:left;overflow:hidden;}| .ui_sel{background:#FFFFBB;}| .ui_item{border-top:1px solid #ddd;height:25px;line-height:25px;padding:0 10px;white-space:nowrap;overflow:hidden;font-size:12px}");
+            if(!Autocomplete.tpl[cssKeyName])
+                Autocomplete.tpl[cssKeyName] = J.rules(tplCss.replace(/\|/g,'.'+cssKeyName), true);
         }
 
         function fixPosition() {
@@ -115,7 +117,6 @@
 						return;
 					}
 					select();
-					if (e.keyCode === 9) { return; }
 					break;
 				case 38: //KEY_UP:
 					moveUp();
