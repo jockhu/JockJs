@@ -357,9 +357,11 @@
     };
 
     J.mix(dom,{
+        dom:dom,
         create:create,
         fn:fn,
-        s:s
+        s:s,
+        g:g
     });
 
     function matchNode(element, direction, start) {

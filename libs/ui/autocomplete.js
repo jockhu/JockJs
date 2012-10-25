@@ -38,6 +38,7 @@
             y:-2
         },
         query: 'kw',
+        placeholder:'',
         cache:true,
         onChange:null,
         onSelect:null,
@@ -65,12 +66,27 @@
             tplName = opts.tpl || 'def';
             cssKeyName = 'Autocomplete_' + tplName;
 
+            if(currentValue === '' && opts.placeholder)
+                el.val(opts.placeholder)
+
             buildMain();
             buildCss();
             fixPosition();
             bindEvent();
 
         })();
+
+        function setPlaceholder(value){
+            opts.placeholder = value
+        }
+
+        function onChange(fn){
+            opts.onChange = fn
+        }
+
+        function onSelect(fn){
+            opts.onSelect = fn
+        }
 
         function getId(){
             return tId ? tId : Math.floor(Math.random() * 0x1000000).toString(16);
@@ -148,11 +164,17 @@
             J.on(D,'click',function(){
                 hide();
                 J.un(D, 'click', arguments.callee);
-            })
+            });
+            if(opts.placeholder && el.val().trim() === '')
+                el.val(opts.placeholder);
         }
 
         function focus(){
             if (disabled) { return; }
+            if (opts.placeholder == el.val().trim()){
+                el.val('');
+                return;
+            }
             intervalTimer = setInterval(function(){
                 if(currentValue != el.val().trim() && !ignoreValueChange) valueChange();
             },300);
@@ -266,6 +288,9 @@
         }
 
         return {
+            setPlaceholder:setPlaceholder,
+            onChange:onChange,
+            onSelect:onSelect,
             enable:enable,
             disable:disable,
             hide:hide,

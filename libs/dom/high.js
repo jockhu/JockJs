@@ -9,10 +9,6 @@
  *
  */
 
-
-/// require('dom.dom');
-/// require('dom.normal');
-
 (function(dom, document){
 
 

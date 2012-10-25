@@ -136,7 +136,7 @@
             return;
         bind = 1;
         if (C === S)
-            return sT(finishRready, 1);
+            return sT(finishRready, 0);
         if (D[aL]) {
             D[aL](cL, function () {
                 D[rL](cL, arguments.callee, 0), finishRready()
@@ -409,6 +409,7 @@
      */
     _.base = mix(base, {
         ready:ready,
+        finish:finishRready,
         load:loadResource,
         use:use,
         rules:rules,
