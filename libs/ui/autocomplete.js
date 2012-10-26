@@ -39,6 +39,7 @@
         },
         query: 'kw',
         placeholder:'',
+        toggleClass:'',
         cache:true,
         onChange:null,
         onSelect:null,
@@ -54,7 +55,7 @@
     function Autocomplete(el, options) {
 
         var disabled = false, el = J.g(el), selectedIndex = -1, currentValue = el.val().trim(), CACHED = [], opts, tId, aId, mainId, isShow = false, divs,
-            mainContainer, container, valueChangeTimer = null, ignoreValueChange = false, intervalTimer = null, tplName, cssKeyName;
+            mainContainer, container, valueChangeTimer = null, ignoreValueChange = false, intervalTimer = null, tplName, cssKeyName, st;
 
         (function(){
             el.attr('autocomplete', 'off');
@@ -66,8 +67,10 @@
             tplName = opts.tpl || 'def';
             cssKeyName = 'Autocomplete_' + tplName;
 
-            if(currentValue === '' && opts.placeholder)
-                el.val(opts.placeholder)
+            if(currentValue === '' && opts.placeholder){
+                el.val(opts.placeholder);
+                opts.toggleClass && el.removeClass(opts.toggleClass);
+            }
 
             buildMain();
             buildCss();
@@ -102,7 +105,7 @@
         }
 
         function buildCss(){
-            var tpl = J['tpl'], tplCss = ((tpl && tpl[tplName]) || "|{border:1px solid #ddd;border-top:0;background:#FFF;cursor:pointer;text-align:left;overflow:hidden;}| .ui_sel{background:#FFFFBB;}| .ui_item{border-top:1px solid #ddd;height:25px;line-height:25px;padding:0 10px;white-space:nowrap;overflow:hidden;font-size:12px}");
+            var tpl = J['tpl'], tplCss = ((tpl && tpl[tplName]) || "|{border:1px solid #ddd;border-top:0;background:#FFF;cursor:pointer;text-align:left;overflow:hidden;}| .ui_sel{background:#FFFFBB;}| .ui_item{border-top:1px solid #ddd;padding:5px 10px;white-space:nowrap;overflow:hidden;font-size:13px}");
             if(!Autocomplete.tpl[cssKeyName])
                 Autocomplete.tpl[cssKeyName] = J.rules(tplCss.replace(/\|/g,'.'+cssKeyName), true);
         }
@@ -165,14 +168,17 @@
                 hide();
                 J.un(D, 'click', arguments.callee);
             });
-            if(opts.placeholder && el.val().trim() === '')
+            if(opts.placeholder && el.val().trim() === ''){
+                opts.toggleClass && el.removeClass(opts.toggleClass);
                 el.val(opts.placeholder);
+            }
         }
 
         function focus(){
             if (disabled) { return; }
             if (opts.placeholder == el.val().trim()){
                 el.val('');
+                opts.toggleClass && el.addClass(opts.toggleClass);
                 return;
             }
             intervalTimer = setInterval(function(){
@@ -198,6 +204,8 @@
         function getData(){
             var a;
             if(opts.cache && (a = CACHED[getCacheKey()])) return suggest(a,'c');
+            if(st) return;
+            st = true;
             opts.params[opts.query] = currentValue.trim();
             J.getJSON(opts.url, {
                 data:opts.params,
@@ -208,7 +216,7 @@
         function suggest(a, c){
             var k,len,div;
             c || (k = getCacheKey()) && (CACHED[k] = a);
-
+            st = false;
             if ((len = a.length) === 0) {
 				hide();
 				return;
@@ -234,12 +242,15 @@
             hide();
             onSelect();
             if(opts.autoSubmit && (form = el.up('form'))){
+                if (opts.placeholder == el.val().trim()){
+                    el.val('');
+                }
                 form && form.get().submit();
             }
         }
 
         function getValue(v){
-            return v ? v.trim().replace(/<[\/]?\w+>/g,'') : '';
+            return v ? v.trim().replace(/<\/?[^>]*>/g,'') : '';
         }
 
         function moveUp(){
