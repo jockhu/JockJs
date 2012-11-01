@@ -55,7 +55,7 @@
     function Autocomplete(el, options) {
 
         var disabled = false, el = J.g(el), selectedIndex = -1, currentValue = el.val().trim(), CACHED = [], opts, tId, aId, mainId, isShow = false, divs,
-            mainContainer, container, valueChangeTimer = null, ignoreValueChange = false, intervalTimer = null, tplName, cssKeyName, st;
+            mainContainer, container, valueChangeTimer = null, ignoreValueChange = false, intervalTimer = null, tplName, cssKeyName, st, cOffset;
 
         (function(){
             el.attr('autocomplete', 'off');
@@ -74,7 +74,6 @@
 
             buildMain();
             buildCss();
-            fixPosition();
             bindEvent();
 
         })();
@@ -282,6 +281,7 @@
         function show(){
             selectedIndex = -1;
 			isShow || (container.show(),isShow = true);
+            fixPosition();
         }
 
         function hide(){

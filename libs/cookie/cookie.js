@@ -48,15 +48,14 @@
                 ((secure) ? ";secure" : "" );
     }
 
-
-    J.add('cookie',{
+    var cookie = {
         /**
          * 获取cookie值
          *
          * @param {String} name cookie名称
          * @return {String} cookie值
          */
-        get: function (name) {
+        getCookie: function (name) {
             var ret, m;
             if (validString(name)) {
                 if ((m = String(doc.cookie).match(
@@ -77,7 +76,7 @@
          * @param {String} secure cookie secure
          * @return null
          */
-        set: function(name, value, expires, path, domain, secure) {
+        setCookie: function(name, value, expires, path, domain, secure) {
             var date;
             if (expires) {
                 date = new Date();
@@ -91,14 +90,18 @@
          * @param {String} name cookie名称
          * @return null
          */
-        remove: function(name, domain, path, secure){
+        removeCookie: function(name, domain, path, secure){
             if (this.get(name)){
                 var date = new Date(0);
                 setCookie(name, '', date, path, domain, secure)
             }
 
         }
-    });
+    };
+
+    J.add('cookie', cookie);
+
+    J.mix(J, cookie);
 
 })(J);
 

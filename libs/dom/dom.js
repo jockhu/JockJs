@@ -340,7 +340,7 @@
         down: function (expression) {
             var element = this.get();
             if (arguments.length == 0) return this.first();
-            return new J.isNumber(expression) ? select('*', element).eq(expression) : select(expression, element);
+            return J.isNumber(expression) ? new select('*', element).eq(expression) : new select(expression, element);
         },
 
         eq:function (i) {
@@ -374,23 +374,23 @@
     }
 
     function getWH(element) {
-        var el = element.get(), dis;
+        var el = element.get();
 
-        if(dis = element.visible()){
+        if(element.visible()){
             return { width:el.offsetWidth, height:el.offsetHeight }
         }
 
         var sty = el.style, stys, wh, ostys = {
             visibility:sty.visibility,
             position:sty.position,
-            display:dis
+            display:sty.display
         };
 
         stys = {
             visibility:'hidden',
             display:'block'
         };
-        if (pos !== 'fixed')
+        if (ostys.position !== 'fixed')
             stys.position = 'absolute';
 
         element.setStyle(stys);
