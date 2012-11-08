@@ -45,7 +45,7 @@ KEY_INSERT:45,
         }
     });
 
-    var E = J.event, dom = J.dom, ME = E.ME, ML = E.ML, U= 'unload', docEl = D.documentElement, isIE = /msie (\d+\.\d+)/i.test(navigator.userAgent);
+    var E = J.event, dom = J.dom, ME = E.ME, ML = E.ML, U= 'unload', docEl = D.documentElement, isIE = J.ua.ie;
     E.MMES = 'on'+ ME in docEl && 'on'+ ML in docEl;
 
     dom && dom.fn && J.each('on un once fire'.split(' '), function(i, v){

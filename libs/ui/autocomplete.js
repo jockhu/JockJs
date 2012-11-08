@@ -74,6 +74,7 @@
 
             buildMain();
             buildCss();
+            //J.load('http://api.jock.dev.aifang.com:8088/css/ac.css','css');
             bindEvent();
 
         })();
@@ -104,7 +105,7 @@
         }
 
         function buildCss(){
-            var tpl = J['tpl'], tplCss = ((tpl && tpl[tplName]) || "|{border:1px solid #ddd;border-top:0;background:#FFF;cursor:pointer;text-align:left;overflow:hidden;}| .ui_sel{background:#FFFFBB;}| .ui_item{border-top:1px solid #ddd;padding:5px 10px;white-space:nowrap;overflow:hidden;font-size:13px}");
+            var tpl = J['tpl'], tplCss = ((tpl && tpl[tplName]) || '#'+mainId+" |{border:1px solid #ddd;border-top:0;background:#FFF;cursor:pointer;text-align:left;overflow:hidden;}| .ui_sel{background:#FFFFBB;}| .ui_item{border-top:1px solid #ddd;padding:5px 10px;white-space:nowrap;overflow:hidden;font-size:13px}");
             if(!Autocomplete.tpl[cssKeyName])
                 Autocomplete.tpl[cssKeyName] = J.rules(tplCss.replace(/\|/g,'.'+cssKeyName), true);
         }
@@ -115,7 +116,7 @@
 		}
 
         function bindEvent(){
-            J.on(el, /opera/i.test(J.ua.ua) ? 'keypress' : 'keydown', KeyPress);
+            J.on(el, J.ua.opera ? 'keypress' : 'keydown', KeyPress);
             J.on(el, 'keyup', keyup);
             J.on(el, 'blur', blur);
             J.on(el, 'focus', focus);

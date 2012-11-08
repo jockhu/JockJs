@@ -42,7 +42,7 @@
 
     var version = '__VERSION__', readyList = [], callList = [], modules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, A = arguments, U = A[2],  s = A[1].split('|'), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = setTimeout, conf = {
             v:version, u:cdn, m:'/', c:'utf-8'
-        }, S = D[rS], Dt = D[aT], c2t = {}, IS = {};
+        }, S = D[rS], Dt = D[aT], c2t = {}, IS = {}, nu = navigator.userAgent, R = RegExp;
 
 
     /**
@@ -124,7 +124,12 @@
             return _.mix(_[module] = _[module] || {}, m);
         },
         ua:{
-            ua:navigator.userAgent
+            ua:nu,
+            chrome : /chrome\/(\d+\.\d+)/i.test(nu) ? + R.$1 : U,
+            firefox : /firefox\/(\d+\.\d+)/i.test(nu) ? + R.$1 : U,
+            ie : /msie (\d+\.\d+)/i.test(nu) ? (D.documentMode || + R.$1) : U,
+            opera : /opera(\/| )(\d+(\.\d+)?)(.+?(version\/(\d+(\.\d+)?)))?/i.test(nu) ?  + ( R.$6 || R.$2 ) : U,
+            safari : /(\d+\.\d)?(?:\.\d)?\s+safari\/?(\d+\.\d+)?/i.test(nu) && !/chrome/i.test(nu) ? + (R.$1 || R.$2) : U
         }
     });
 
@@ -331,14 +336,12 @@
         if (mods.length) {
             if (delay && IS.isNumber(delay)) {
                 ready(function () {
-                    sT(function () {
-                        var m, M = [], i = 0;
-                        while ((m = mods[i++]) && !moduleExits(m)) M.push(m);
-                        if (M.length) {
-                            loadResource(buildUrl(mods), 'js', '', callback)
-                        } else callback.call()
-                    }, delay*1000)
-                });
+                    var m, M = [], i = 0;
+                    while ((m = mods[i++]) && !moduleExits(m)) M.push(m);
+                    if (M.length) {
+                        loadResource(buildUrl(mods), 'js', '', callback)
+                    } else callback.call()
+                }.delay(delay));
             } else if (!isReady && !delay) {
                 i = 0;
                 while ((mod = mods[i++])) modules.push(mod);
@@ -384,7 +387,20 @@
     Function.prototype.require = function () {
         var args = slice.call(arguments);
         args.splice(1,0,this);
-        use.apply(null, args);
+        use.apply(null, args)
+    };
+
+    /**
+     * 扩展Function，延迟执行
+     * @name delay
+     * @function
+     *
+     */
+    Function.prototype.delay = function(timeout){
+        var m = this, args = slice.call(arguments, 1);
+        setTimeout(function() {
+            return m.apply(m, args);
+        }, timeout * 1000);
     };
 
 

@@ -10,7 +10,6 @@
  */
 
 /// require('lang.merge');
-/// require('ua.ie');
 /// require('string.trim');
 
 /**
