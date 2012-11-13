@@ -35,7 +35,7 @@
         source: {},
         offset:{
             x:0,
-            y:-2
+            y:-1
         },
         query: 'kw',
         placeholder:'',
@@ -43,7 +43,7 @@
         cache:true,
         onChange:null,
         onSelect:null,
-        tpl:null
+        tpl:'autocomplete_def'
     };
 
     /**
@@ -54,29 +54,21 @@
      */
     function Autocomplete(el, options) {
 
-        var disabled = false, el = J.g(el), selectedIndex = -1, currentValue = el.val().trim(), CACHED = [], opts, tId, aId, mainId, isShow = false, divs,
-            mainContainer, container, valueChangeTimer = null, ignoreValueChange = false, intervalTimer = null, tplName, cssKeyName, st, cOffset;
+        var disabled = false, el = J.g(el), selectedIndex = -1, currentValue = el.val().trim(), CACHED = [], opts, aId, isShow = false, divs,
+            mainContainer, container, valueChangeTimer = null, ignoreValueChange = false, intervalTimer = null, st, query;
 
         (function(){
             el.attr('autocomplete', 'off');
             opts = J.mix(defaultOpts, options || {}, true);
-            tId = getId();
-            aId = 'Autocomplete_' + tId;
-            mainId = 'AutocompleteMain_' + tId;
+            aId = 'Autocomplete_' + getId();
             opts.width || (opts.width = el.width()-2);
-            tplName = opts.tpl || 'def';
-            cssKeyName = 'Autocomplete_' + tplName;
-
+            (query = el.attr('name')) && (opts.query = query);
             if(currentValue === '' && opts.placeholder){
                 el.val(opts.placeholder);
                 opts.toggleClass && el.removeClass(opts.toggleClass);
             }
-
             buildMain();
-            buildCss();
-            //J.load('http://api.jock.dev.aifang.com:8088/css/ac.css','css');
             bindEvent();
-
         })();
 
         function setPlaceholder(value){
@@ -92,22 +84,12 @@
         }
 
         function getId(){
-            return tId ? tId : Math.floor(Math.random() * 0x1000000).toString(16);
+            return Math.floor(Math.random() * 0x1000000).toString(16);
         }
 
         function buildMain(){
-            J.create('div', {
-                id:mainId,
-                style:'position:absolute;z-index:9999;'
-            }).html('<div class="'+cssKeyName+'" id="' + aId + '" style="display:none; width:'+opts.width+'px"></div>').appendTo('body');
-            mainContainer = J.g(mainId);
+            J.g('body').first().insertBefore(mainContainer = J.create('div', {style:'position:absolute;z-index:1' }).html('<div class="'+opts.tpl+'" id="' + aId + '" style="display:none; width:'+opts.width+'px"></div>'));
             container = J.g(aId);
-        }
-
-        function buildCss(){
-            var tpl = J['tpl'], tplCss = ((tpl && tpl[tplName]) || '#'+mainId+" |{border:1px solid #ddd;border-top:0;background:#FFF;cursor:pointer;text-align:left;overflow:hidden;}| .ui_sel{background:#FFFFBB;}| .ui_item{border-top:1px solid #ddd;padding:5px 10px;white-space:nowrap;overflow:hidden;font-size:13px}");
-            if(!Autocomplete.tpl[cssKeyName])
-                Autocomplete.tpl[cssKeyName] = J.rules(tplCss.replace(/\|/g,'.'+cssKeyName), true);
         }
 
         function fixPosition() {
@@ -215,15 +197,15 @@
 
         function suggest(a, c){
             var k,len,div;
-            c || (k = getCacheKey()) && (CACHED[k] = a);
             st = false;
-            if ((len = a.length) === 0) {
+            if (!a || (len = a.length) === 0) {
 				hide();
 				return;
 			}
+            c || (k = getCacheKey(), CACHED[k] = a);
             container.empty();
             for (var i = 0; i < len; i++)
-                (div = J.create('div', {"class": selectedIndex === i ? 'ui_item ui_sel':'ui_item',title:getValue(a[i])}).html(a[i]).appendTo(container)).on('mouseover', activate, i).on('click', select, i);
+                (div = J.create('div', {"class": selectedIndex === i ? 'ui_item ui_sel':'ui_item', title:getValue(a[i])}).html(a[i]).appendTo(container)).on('mouseover', activate, i).on('click', select, i);
             show();
             divs = container.s('div');
         }
@@ -309,8 +291,6 @@
             show:show
         };
 	}
-
-    Autocomplete.tpl = {};
 
 
     J.dom.fn.autocomplete = function(options){

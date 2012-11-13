@@ -49,6 +49,18 @@ exports.version = process.argv[5];
 exports.root = 'libs';
 
 /**
+ * Default user root path
+ * @const
+ */
+exports.userRoot = 'libs';
+
+/**
+ * Default user modules
+ * @const
+ */
+exports.userModules = [];
+
+/**
  * Default cache path
  * @const
  */
@@ -59,6 +71,30 @@ exports.cache = 'cache';
  * @const
  */
 exports.logPath = 'log';
+
+/**
+ * Default javascript host
+ * @const
+ */
+exports.jsHost = '';
+
+/**
+ * Default javascript path
+ * @const
+ */
+exports.jsPath = '';
+
+/**
+ * Default style hosts
+ * @const
+ */
+exports.cssHost = '';
+
+/**
+ * Default style path
+ * @const
+ */
+exports.cssPath = '';
 
 /**
  * Default enable access log

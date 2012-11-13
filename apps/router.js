@@ -126,8 +126,8 @@ Router.prototype.getHost = function(){
  * @return path
  *
  */
-Router.prototype.getLibsFilePath = function(){
-    return conf.root;
+Router.prototype.getLibsFilePath = function(user){
+    return user ? conf.userRoot : conf.root;
 }
 /**
  *

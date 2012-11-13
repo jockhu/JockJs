@@ -3,13 +3,17 @@
  * resource.js
  *
  */
+(function(){
 
 var conf = require("../conf/config"),
     Router = require("./router").Router,
     Fs = require("fs"),
     Path = require("path"),
     Log = require("./log").Log,
-    uglify = require("uglify-js");
+    uglify = require("uglify-js"),
+    Utils = require("./utils");
+    try{Utils.extend(conf, require('config'))}catch(e){}
+
 
 /**
  * Resource(request, response)
@@ -92,6 +96,8 @@ var Resource = exports.Resource = function(request, response) {
 Resource.prototype.init = function() {
     this.router = new Router(this.req, this.res);
     this.urlPath = this.getPath().slice(1); // remove '/'
+    this.jsPath = conf.jsPath ? conf.jsPath + '/' : '';
+    this.cssPath = conf.cssPath ? conf.cssPath + '/' : '';
     this.loadUrlInfos(this.urlPath);
 }
 /**
@@ -105,9 +111,23 @@ Resource.prototype.loadUrlInfos = function(path) {
     var modules = [];
     modules = path.split(this.regModule);
 	this.releaseVersion = modules.pop().replace(/\.js.*/gi,''); // remove last item and building release versions
-    this.releaseVersion = /^\d+$/.test(this.releaseVersion) ? parseInt(this.releaseVersion+this.releaseVersion).toString(36) : this.releaseVersion;
+    this.releaseVersion = /^\d+$/.test(this.releaseVersion) ? this.getHashCode(this.releaseVersion) : this.releaseVersion;
+    this.jsPath && modules.splice(0,1);
     this.mods = modules;
 }
+
+/**
+ *
+ * Resource.getHashCode()
+ *
+ * Get Hash Code
+ *
+ */
+Resource.prototype.getHashCode = function(a) {
+    var a = parseInt(a);
+    return a.toString(26)+a.toString(16)+a.toString(12)+a.toString(18)
+}
+
 /**
  *
  * Resource.compress(buf)
@@ -123,17 +143,9 @@ Resource.prototype.compress = function(buf) {
         try{
             var jsp = uglify.parser, pro = uglify.uglify;
             var ast = jsp.parse(buf); // parse code and get the initial AST
-            ast = pro.ast_mangle(ast,{
-                //toplevel: true,
-                except: conf.except
-	            //defines:false
-            }); // get a new AST with mangled names
+            ast = pro.ast_mangle(ast,{ except: conf.except }); // get a new AST with mangled names
             ast = pro.ast_squeeze(ast); //  get an AST with compression optimizations
-            final_code = pro.gen_code(ast,{
-                //quote_keys: true,
-	            //beautify:true,
-                ascii_only: true
-            }); // compressed code here
+            final_code = pro.gen_code(ast,{ ascii_only: true}); // compressed code here
         }catch(e){
             final_code = buf;
 	        Log.log(e.toString());
@@ -197,9 +209,8 @@ Resource.prototype.existsModules = function(module) {
  *
  */
 Resource.prototype.getResource = function() {
-    var path = this.getRealCacheFilePath(), cacheFile = path + '/' + this.urlPath.replace(this.regModule,'_'), result = '', expires = new Date();
+    var path = this.getRealCacheFilePath(), cacheFile = path + '/' + this.mods.join(',')+'.js', result = '', expires = new Date();
     Log.access(this.req.url + this.referer);
-
 
     if(this.mods.length === 0) return '';
 
@@ -280,7 +291,7 @@ Resource.prototype.loadResource = function(modules) {
  *
  */
 Resource.prototype.loadFiles = function(module) {
-    if(this.existsModules(module)) return;
+    if(this.existsModules(module)) return 0;
     var moduleContent = this.readFiles(this.getRealFilePath(module), module);
     this.addModules(module);
     return moduleContent;
@@ -333,12 +344,12 @@ Resource.prototype.readFiles = function(path, module) {
  */
 Resource.prototype.loadFile = function(file) {
     var content = [], fileContent = '', newModules = [], module = this.pathToString(file); // as dom.get
-    if(this.existsModules(module)) return;
+    if(this.existsModules(module)) return 0;
     try{
         fileContent = Fs.readFileSync(file).toString();
         this.addModules(module);
 	    if('base.base' === module){
-		    fileContent = fileContent.replace('__HOST__', this.getHost() ).replace('__VERSION__', this.getReleaseVersion())
+		    fileContent = fileContent.replace('__JHOST__', ( conf.jsHost || this.getHost() ) + (conf.jsPath ? conf.jsPath + '/' : '') ).replace('__CHOST__', conf.cssHost + (conf.cssPath ? conf.cssPath + '/' : '') ).replace('__VERSION__', this.getReleaseVersion())
 	    }
         Log.log('load file:',file);
     }catch(e){
@@ -363,7 +374,7 @@ Resource.prototype.loadFile = function(file) {
  *
  */
 Resource.prototype.getFileFromRequire = function(content) {
-    var modules = [];
+    var modules = [] ,result;
     while((result = this.regRequire.exec(content)) != null){
         if(!this.existsModules(result[1]))
             modules.push(result[1]);
@@ -392,7 +403,7 @@ Resource.prototype.getRequireType = function(reqString) {
  *
  */
 Resource.prototype.pathToString = function(reqString) {
-    return reqString.replace(this.router.getLibsFilePath()+'/', '').replace(/\//g, '.').replace(/\.js/gi,'');
+    return reqString.replace(this.getRealFilePath(''), '').replace(/\//g, '.').replace(/\.js/gi,'');
 }
 /**
  *
@@ -429,7 +440,7 @@ Resource.prototype.getPath = function() {
  * @return host
  *
  */
-Resource.prototype.getHost = function() {
+Resource.prototype.getHost = function(type) {
     return this.router.getHost();
 }
 
@@ -444,7 +455,37 @@ Resource.prototype.getHost = function() {
  *
  */
 Resource.prototype.getRealFilePath = function(file) {
-    return this.router.getLibsFilePath() + '/' + file;
+    return this.router.getLibsFilePath( this.isUserModule(file.split('\/')[0]) ) + '/' + file;
+}
+
+/**
+ *
+ * Resource.isUserModule(module)
+ *
+ */
+Resource.prototype.isUserModule = function(module) {
+    if(!conf.userModules.length) return 0;
+    return this.inArray(module, conf.userModules) > -1
+}
+
+
+/**
+ *
+ * Resource.inArray(item, array)
+ *
+ */
+Resource.prototype.inArray = function(item, array) {
+    var i = 0, l;
+    if ( array ) {
+        l = array.length;
+
+        for ( ; i < l; i++ ) {
+            if ( array[ i ] === item ) {
+                return i;
+            }
+        }
+    }
+    return -1;
 }
 
 /**
@@ -472,3 +513,5 @@ Resource.prototype.getRealCacheFilePath = function() {
 Resource.prototype.getReleaseVersion = function() {
 	return conf.version || this.releaseVersion;
 }
+
+})();

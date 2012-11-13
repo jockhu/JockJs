@@ -12,11 +12,11 @@
  * @return {Object} The new extended object.
  * @ignore
  */
-exports.extend = function(target, source) {
-    return (function(object) {
-        for(var property in object.prototype) {
-            this.prototype[property] = object.prototype[property];
+exports.extend = function (target, source) {
+    for (var p in source) {
+        if (source.hasOwnProperty(p)) {
+            target[p] = source[p];
         }
-        return this;
-    }).apply(target, [source]);
+    }
+    return target;
 };
