@@ -14,7 +14,7 @@
  */
 
 (function(J){
-    var doc = document,
+    var D = document,
         millisecond = 24 * 60 * 60 * 1000,
         encode = encodeURIComponent,
         decode = decodeURIComponent;
@@ -40,10 +40,10 @@
      * @param {String} secure cookie secure
      * @return null
      */
-    function setCookie(name, value, date, path, domain, secure){
-        doc.cookie = name + "=" + String(encode( value )) +
+    function setCookie(name, value, date, domain, path, secure){
+        D.cookie = name + "=" + String(encode( value )) +
                 ((date) ? ";expires=" + date.toGMTString() : "") +
-                (validString(path) ? ";path=" + path : "") +
+                (validString(path) ? ";path=" + path : "/") +
                 (validString(domain) ? ";domain=" + domain : "" ) +
                 ((secure) ? ";secure" : "" );
     }
@@ -58,7 +58,7 @@
         getCookie: function (name) {
             var ret, m;
             if (validString(name)) {
-                if ((m = String(doc.cookie).match(
+                if ((m = String(D.cookie).match(
                     new RegExp('(?:^| )' + name + '(?:(?:=([^;]*))|;|$)')))) {
                     ret = m[1] ? decode(m[1]) : '';
                 }
@@ -76,13 +76,13 @@
          * @param {String} secure cookie secure
          * @return null
          */
-        setCookie: function(name, value, expires, path, domain, secure) {
-            var date;
+        setCookie: function(name, value, expires, domain, path, secure) {
+            var date = '';
             if (expires) {
                 date = new Date();
                 date.setTime(date.getTime() + expires * millisecond);
             }
-            setCookie(name, value, date, path, domain, secure)
+            setCookie(name, value, date, domain, path, secure)
         },
         /**
          * 删除cookie
@@ -91,9 +91,9 @@
          * @return null
          */
         removeCookie: function(name, domain, path, secure){
-            if (this.get(name)){
-                var date = new Date(0);
-                setCookie(name, '', date, path, domain, secure)
+            if (this.getCookie(name)){
+                var expires = new Date(0);
+                setCookie(name, '', expires, domain, path, secure)
             }
 
         }

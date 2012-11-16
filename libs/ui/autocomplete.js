@@ -88,7 +88,7 @@
         }
 
         function buildMain(){
-            J.g('body').first().insertBefore(mainContainer = J.create('div', {style:'position:absolute;z-index:1' }).html('<div class="'+opts.tpl+'" id="' + aId + '" style="display:none; width:'+opts.width+'px"></div>'));
+            J.g('body').first().insertBefore(mainContainer = J.create('div', {style:'position:absolute;z-index:10000' }).html('<div class="'+opts.tpl+'" id="' + aId + '" style="display:none; width:'+opts.width+'px"></div>'));
             container = J.g(aId);
         }
 

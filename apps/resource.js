@@ -291,7 +291,7 @@ Resource.prototype.loadResource = function(modules) {
  *
  */
 Resource.prototype.loadFiles = function(module) {
-    if(this.existsModules(module)) return 0;
+    if(this.existsModules(module)) return '';
     var moduleContent = this.readFiles(this.getRealFilePath(module), module);
     this.addModules(module);
     return moduleContent;
@@ -344,7 +344,7 @@ Resource.prototype.readFiles = function(path, module) {
  */
 Resource.prototype.loadFile = function(file) {
     var content = [], fileContent = '', newModules = [], module = this.pathToString(file); // as dom.get
-    if(this.existsModules(module)) return 0;
+    if(this.existsModules(module)) return '';
     try{
         fileContent = Fs.readFileSync(file).toString();
         this.addModules(module);
