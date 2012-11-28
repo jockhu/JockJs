@@ -247,6 +247,7 @@ Resource.prototype.getResource = function() {
         }
     };
 
+    this.res.setHeader("Connection", 'Close');
     this.res.setHeader("ETag", expires.getTime().toString(36));
     this.res.setHeader("Last-Modified", expires.toUTCString());
     expires.setTime(expires.getTime() + (conf.maxAge * 10000));

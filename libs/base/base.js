@@ -22,8 +22,7 @@
  *
  */
 (function (W) {
-
-    var hs = 'hasOwnProperty', mix = function (l, r, w) {
+    var BaseStart = +new Date(), PageStart = W.PAGESTART || BaseStart, hs = 'hasOwnProperty', mix = function (l, r, w) {
             if(w){
                 var N = {};
                 for (var n in l){ if (l[hs](n))N[n] = l[n]}
@@ -31,18 +30,15 @@
                 return N;
             }
             for (var p in r) {if (r[hs](p)) {l[p] = r[p];} }return l;
-        }, base = {},slice = Array.prototype.slice,jsH = '__JHOST__',cssH = '__CHOST__', _ = {};
+        }, base = {},slice = Array.prototype.slice,jsH = '__JHOST__',cssH = '__CHOST__', _ = {}, times = {
+        PageStart:PageStart,
+        BaseStart:BaseStart,
+        ContentLoaded:PageStart
+    };
 
-    /**
-     * 解决js压缩变量不压缩问题
-     * 所有用eval的地方需要用J.eval来调用
-     */
-    _.eval = W.eval;
-
-
-    var version = '__VERSION__', readyList = [], callList = [], jsModules = [], cssModules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, A = arguments, U = A[2],  s = A[1].split('|'), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = setTimeout, conf = {
+    var version = '__VERSION__', readyList = [], callList = [], jsModules = [], cssModules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, A = arguments, U = A[2],  s = A[1].split(','), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = W.setTimeout, conf = {
             v:version, u:jsH, m:'/', c:'utf-8', s:cssH
-        }, S = D[rS], Dt = D[aT], c2t = {}, IS = {}, nu = navigator.userAgent, R = RegExp;
+        }, S = D[rS], Dt = D[aT], c2t = {}, IS = {}, nu = navigator.userAgent, R = RegExp, js = 'js', css = 'css';
 
 
     /**
@@ -141,7 +137,7 @@
             return;
         bind = 1;
         if (C === S)
-            return sT(finishRready, 0);
+            return finishRready();
         if (D[aL]) {
             D[aL](cL, function () {
                 D[rL](cL, arguments.callee, 0), finishRready()
@@ -192,6 +188,7 @@
                 return sT(finishRready, 1);
             }
             isReady = 1;
+            times.ContentLoaded = getTime();
             if (readyList) {
                 var fn, i = 0;
                 while (( fn = readyList[i++])) {
@@ -199,7 +196,9 @@
                 }
                 readyList = null;
             }
+            return 0
         }
+        times.PageLoaded = getTime();
     }
 
     /**
@@ -212,14 +211,14 @@
     function loadResource(url, type, callback) {
         var n;
         IS.isFunction(type) && (callback = type);
-        type = /\.(js|css)/g.exec(url.toLowerCase()), type = type ? type[1] : 'js';
-        if ('js' === type) {
+        type = /\.(js|css)/g.exec(url.toLowerCase()), type = type ? type[1] : js;
+        if (js === type) {
             n = D.createElement('script');
             n.type = 'text/javascript';
             n.src = url;
             n.async = 'true';
             n.charset = conf.c;
-        } else if ('css' === type) {
+        } else if (css === type) {
             n = D.createElement('link');
             n.type = 'text/css';
             n.rel = 'stylesheet';
@@ -245,8 +244,8 @@
      * @return {String} 资源地址
      */
     function buildUrl(m,t) {
-        t || (t = 'js');
-        return conf[t == 'js' ? 'u':'s'] + m.join(conf.m) + conf.m + conf.v + '.' + t;
+        t || (t = js);
+        return conf[t == js ? 'u':'s'] + m.join(conf.m) + conf.m + conf.v + '.' + t;
     }
 
     /**
@@ -256,7 +255,7 @@
      * @return {Boolean}
      */
     function moduleExits(m,t) {
-        if(t == 'css') return inArray(m, cssModules) > -1;
+        if(t == css) return inArray(m, cssModules) > -1;
         var o = m.split('.'), n = o.length, M = _[o[0]];
         return (n === 1 && M) ? true : (n === 2 && M && M[o[1]]) ? true : false;
     }
@@ -268,7 +267,7 @@
      * @return {Array}
      */
     function filterModules(m,t){
-        var i= 0, l = m.length, M = [], R = [], re, K;
+        var l = m.length, M = [], R = [], re, K;
         while(l--){
             K = m[l];
             if(/^\w+$/.test(K)){
@@ -325,7 +324,7 @@
     function use(require, callback, type, delay) {
         var mod, mods = [], cmods = [], i = 0, isJs;
 
-        (type != 'js' && type != 'css') && (delay = type, type = 'js'), isJs = (type == 'js');
+        (type != js && type != css) && (delay = type, type = js), isJs = (type == js);
 
         if (IS.isArray(require)) {
             while ((mod = require[i++])) (isJs ? mods : cmods).push(mod);
@@ -352,28 +351,6 @@
                 loadResource(buildUrl(mods,type), type, callback)
             else callback && callback.call()
         }
-
-
-        /*if (mods.length) {
-
-            if (delay && IS.isNumber(delay)) {
-                ready(function () {
-                    var m, M = [], i = 0;
-                    while ((m = mods[i++]) && !moduleExits(m,type)) M.push(m);
-                    if (M.length) {
-                        loadResource(buildUrl(M,type), type, callback)
-                    } else callback && callback.call()
-                }.delay(delay));
-            } else if (!isReady && !delay) {
-                i = 0;
-                while ((mod = mods[i++])) (isJs ? jsModules : cssModules).push(mod);
-                // 不需要实时处理的模块将加入队列
-                callback && callList.push(callback);
-            } else loadResource(buildUrl(mods,type), type, callback)
-        } else {
-            // 模块都存在直接回调
-            callback && callback.call()
-        }*/
     }
 
 
@@ -381,6 +358,7 @@
      * ready后执行队列任务
      */
     ready(function () {
+
         var mods = filterModules(jsModules);
         function fCallbacks(){
             var fn , i = 0;
@@ -388,13 +366,13 @@
             jsModules = callList = null;
         }
         if (mods.length) {
-            loadResource(buildUrl(mods), 'js', fCallbacks);
+            loadResource(buildUrl(mods), js, fCallbacks);
             mods = [];
         }else fCallbacks();
 
-        mods = filterModules(cssModules);
+        mods = filterModules(cssModules, css);
         if (mods.length) {
-            loadResource(buildUrl(mods,'css'), 'css');
+            loadResource(buildUrl(mods, css), css);
             cssModules = [];
         }
 
@@ -412,9 +390,9 @@
      * 扩展require方法
      */
     Function.prototype.require = function () {
-        var a = arguments, args = slice.call(a), jsM = args[0], cssM = args[1];
-        (IS.isArray(cssM) || IS.isString(cssM)) && use.apply(_, [].concat(cssM, [null,'css'], slice.call(a,2))) , args.splice(1,1);
-        args.splice(1,0,this,'js');
+        var a = arguments, args = slice.call(a), cssM = args[1];
+        (IS.isArray(cssM) || IS.isString(cssM)) && use.apply(_, [].concat([cssM], [null,css], slice.call(a,2))) , args.splice(1,1);
+        args.splice(1,0,this,js);
         use.apply(_, args)
     };
 
@@ -426,7 +404,7 @@
      */
     Function.prototype.delay = function(timeout){
         var m = this, args = slice.call(arguments, 1);
-        setTimeout(function() {
+        sT(function() {
             return m.apply(m, args);
         }, timeout * 1000);
     };
@@ -447,6 +425,10 @@
         return s;
     }
 
+    function getTime(){
+        return +new Date()
+    }
+
 
     /**
      * 构造ready，load，use方法
@@ -459,6 +441,8 @@
         rules:rules,
         each:each,
         type:T,
+        getTime:getTime,
+        times:times,
         slice:slice
     });
 
@@ -470,4 +454,4 @@
 
     W['J'] = _;
 
-})(window, 'addEventListener|removeEventListener|attachEvent|detachEvent|DOMContentLoaded|onreadystatechange|readyState|complete|load', undefined);
+})(window, 'addEventListener,removeEventListener,attachEvent,detachEvent,DOMContentLoaded,onreadystatechange,readyState,complete,load', undefined);

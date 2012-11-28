@@ -176,34 +176,6 @@
 J.add('json',(function () {
     var JSON = window['JSON'] || {};
 
-    function f(n) {
-        // Format integers to have at least two digits.
-        return n < 10 ? '0' + n : n;
-    }
-
-    if (typeof Date.prototype.toJSON !== 'function') {
-
-        Date.prototype.toJSON = function (key) {
-
-            return isFinite(this.valueOf())
-                ? this.getUTCFullYear()     + '-' +
-                    f(this.getUTCMonth() + 1) + '-' +
-                    f(this.getUTCDate())      + 'T' +
-                    f(this.getUTCHours())     + ':' +
-                    f(this.getUTCMinutes())   + ':' +
-                    f(this.getUTCSeconds())   + 'Z'
-                : null;
-        };
-
-        /*
-        String.prototype.toJSON      =
-                    Number.prototype.toJSON  =
-                    Boolean.prototype.toJSON = function (key) {
-                        return this.valueOf();
-                    };*/
-
-    }
-
     var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
         escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
         gap,
@@ -367,7 +339,7 @@ J.add('json',(function () {
 
 // If the JSON object does not yet have a stringify method, give it one.
 
-    if (typeof JSON.stringify !== 'function') {
+    if (!J.isFunction(JSON.stringify)) {
         JSON.stringify = function (value, replacer, space) {
 
 // The stringify method takes a value and an optional replacer, and an optional
@@ -414,7 +386,7 @@ J.add('json',(function () {
 
 // If the JSON object does not yet have a parse method, give it one.
 
-    if (typeof JSON.parse !== 'function') {
+    if (!J.isFunction(JSON.parse)) {
         JSON.parse = function (text, reviver) {
 
 // The parse method takes a text and an optional reviver function, and returns
@@ -498,8 +470,6 @@ J.add('json',(function () {
 
     return {
         stringify: JSON.stringify,
-        encode: JSON.stringify,
-        parse : JSON.parse,
-        decode : JSON.parse
+        parse : JSON.parse
     };
 }()));

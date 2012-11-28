@@ -2,7 +2,6 @@
     var http = require("http"), url = require("url"), conf = require("../conf/config"), Log = require("./log").Log, zlib = require("zlib");
 
     exports.initialize = function () {
-
         if (process.argv[2] == '--help' || process.argv[2] == 'help') {
             console.log('\nnode service.js [[[[port]  debug]  compress]  version]');
             console.log('\nExample\nnode service.js 8000 true true\n');

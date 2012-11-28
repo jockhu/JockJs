@@ -189,7 +189,9 @@
             if(st) return;
             st = true;
             opts.params[opts.query] = currentValue.trim();
-            J.getJSON(opts.url, {
+            J.get({
+                url:opts.url,
+                type:'json',
                 data:opts.params,
                 onSuccess:suggest
             });

@@ -90,7 +90,7 @@
          * @param {String} name cookie名称
          * @return null
          */
-        removeCookie: function(name, domain, path, secure){
+        rmCookie: function(name, domain, path, secure){
             if (this.getCookie(name)){
                 var expires = new Date(0);
                 setCookie(name, '', expires, domain, path, secure)
