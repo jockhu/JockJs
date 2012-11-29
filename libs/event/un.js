@@ -30,9 +30,10 @@
  */
 
 J.un = J.event.un = function (element, type, handler) {
-    element = J.isString(element) ? document.getElementById(element) : element.length ? element.get(0) : element;
 
     var E = J.event, a = E.CACHE,  DA = E.DA, LO = E.LO, l = a.length, e, elmAll = !type, typeAll = !handler, isFire , rE = 'removeEventListener', dT = 'detachEvent';
+
+    if( !(element = E.g(element)) ) return false;
 
     if (!E.MMES && !type) {
         type = E.fixName(type);

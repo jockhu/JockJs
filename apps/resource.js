@@ -14,7 +14,6 @@ var conf = require("../conf/config"),
     Utils = require("./utils");
     try{Utils.extend(conf, require('config'))}catch(e){}
 
-
 /**
  * Resource(request, response)
  *
@@ -137,6 +136,7 @@ Resource.prototype.getHashCode = function(a) {
  *
  */
 Resource.prototype.compress = function(buf) {
+
     if(this.enableCompress){
         Log.log('Compress enabled.');
         var final_code = '';

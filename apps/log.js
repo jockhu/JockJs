@@ -1,14 +1,13 @@
-
-var conf = require("../conf/config"),
-    Path = require("path"),
-    fs   = require("fs");
-
-
 /**
  * Log
  *
  */
 (function(){
+    var conf = require("../conf/config"),
+    fs   = require("fs"),
+    Utils = require("./utils");
+    try{Utils.extend(conf, require('config'))}catch(e){}
+
     var logPath = conf.logPath,
 	    date    = new Date(),
 	    year    = date.getFullYear(),

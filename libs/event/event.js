@@ -42,6 +42,9 @@ KEY_INSERT:45,
         fixName:fixEventName,
         getKeyCode:function (event) {
             return event.which || event.keyCode;
+        },
+        g:function(element){
+            return J.isString(element) ? D.getElementById(element) : (element.length && element.get) ? element.get(0) : element;
         }
     });
 

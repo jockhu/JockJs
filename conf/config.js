@@ -28,13 +28,13 @@ exports.port = process.argv[2] || 8000;
  * Default debug
  * @const
  */
-exports.debug = (process.argv[3] != undefined) ? process.argv[3] : false;
+exports.debug = (process.argv[3] != undefined) ? process.argv[3] == 'true' : false;
 
 /**
  * Default enable compression
  * @const
  */
-exports.enableCompress = (process.argv[4] != undefined) ? process.argv[4] : true;
+exports.enableCompress = (process.argv[4] != undefined) ? process.argv[4] == 'true' : true;
 
 /**
  * Default version

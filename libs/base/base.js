@@ -31,9 +31,9 @@
             }
             for (var p in r) {if (r[hs](p)) {l[p] = r[p];} }return l;
         }, base = {},slice = Array.prototype.slice,jsH = '__JHOST__',cssH = '__CHOST__', _ = {}, times = {
-        PageStart:PageStart,
-        BaseStart:BaseStart,
-        ContentLoaded:PageStart
+        PS:PageStart,
+        BS:BaseStart,
+        CL:PageStart
     };
 
     var version = '__VERSION__', readyList = [], callList = [], jsModules = [], cssModules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, A = arguments, U = A[2],  s = A[1].split(','), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = W.setTimeout, conf = {
@@ -188,7 +188,7 @@
                 return sT(finishRready, 1);
             }
             isReady = 1;
-            times.ContentLoaded = getTime();
+            times.CL = getTime();
             if (readyList) {
                 var fn, i = 0;
                 while (( fn = readyList[i++])) {
@@ -198,7 +198,7 @@
             }
             return 0
         }
-        times.PageLoaded = getTime();
+        times.PL = getTime();
     }
 
     /**

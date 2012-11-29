@@ -97,9 +97,10 @@
             form.method = 'post';
             form.target = guid;
             ifContainer.appendChild(form);
-            body.appendChild(ifContainer);
+            body.insertBefore( ifContainer, body.firstChild );
             D.getElementById(guid).onload = function(){
-                body.removeChild(ifContainer)
+                if(body && ifContainer.parentNode)
+                    body.removeChild(ifContainer)
             };
             form.submit();
         }
@@ -107,6 +108,7 @@
         function ajax() {
             try {
                 var async = opts.async, headers = opts.headers, data = opts.data, timeout = opts.timeout, aUrl;
+                alert(method)
 
                 xhr = getXHR();
 
@@ -164,7 +166,7 @@
             if (data && !J.isString(data)) (data = param(data));
             if (method == "GET") {
                 data && (url += fn() + data);
-                (opts.type == 'jsonp') && (url += fn() + 'callback=' + opts.callback);
+                (opts.type == 'jsonp' && opts.callback) && (url += fn() + 'callback=' + opts.callback);
                 opts.cache || (url += fn() + 'J' + J.getTime())
             }
             function fn() {

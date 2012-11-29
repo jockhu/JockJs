@@ -32,12 +32,12 @@
  */
 
 J.on = J.event.on = function (element, type, handler, data, preventDefault, stopPropagation) {
-    element = J.isString(element) ? document.getElementById(element) : element.length ? element.get(0) : element;
 
-    if(!element) return false;
+    var E = J.event, a = E.CACHE, responder, isFire = type.indexOf(':') > -1, aD = 'addEventListener', aT = 'attachEvent', DA = E.DA, LO = E.LO;
 
-    var E = J.event, a = E.CACHE, responder = E.fix(element, type, handler, data, preventDefault, stopPropagation), isFire = type.indexOf(':') > -1, aD = 'addEventListener', aT = 'attachEvent',
-        DA = E.DA, LO = E.LO;
+    if( !(element = E.g(element)) ) return false;
+
+    responder = E.fix(element, type, handler, data, preventDefault, stopPropagation);
 
     if (!E.MMES) type = E.fixName(type);
 
@@ -55,5 +55,6 @@ J.on = J.event.on = function (element, type, handler, data, preventDefault, stop
         h:handler,
         r:responder
     });
+
     return element;
 };
