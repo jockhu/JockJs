@@ -108,7 +108,6 @@
         function ajax() {
             try {
                 var async = opts.async, headers = opts.headers, data = opts.data, timeout = opts.timeout, aUrl;
-                alert(method)
 
                 xhr = getXHR();
 
