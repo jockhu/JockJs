@@ -15,6 +15,12 @@
 
             if (res.faviconFix(request.url)) return;
 
+            if ("/" === url.parse(request.url).pathname.slice(-1)){
+                Log.log('Error:404 Not Found ' + request.url,' Referer:' + request.headers.referer);
+                res.err404();
+                return;
+            }
+
             content = resource.getResource();
             useGzip = /gzip/.test(request.headers['accept-encoding']);
 

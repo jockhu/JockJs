@@ -441,7 +441,7 @@ Resource.prototype.getPath = function() {
  * @return host
  *
  */
-Resource.prototype.getHost = function(type) {
+Resource.prototype.getHost = function() {
     return this.router.getHost();
 }
 
