@@ -258,6 +258,17 @@ Resource.prototype.getResource = function() {
 
 /**
  *
+ * Resource.validateModule()
+ *
+ * @return Boolean
+ *
+ */
+Resource.prototype.validateModule = function(module) {
+    return /^[a-z]+[\.]?[a-zA-Z_]+$/.test(module)
+}
+
+/**
+ *
  * Resource.loadResource()
  *
  * Get resource
@@ -266,16 +277,18 @@ Resource.prototype.getResource = function() {
  *
  */
 Resource.prototype.loadResource = function(modules) {
-    var modules = modules || this.mods, resFiles = [];
+    var modules = modules || this.mods, resFiles = [], cMod;
     Log.log('loadResource -> modules',modules)
     for(var i=0; i<modules.length; i++){
-        Log.log('loadResource -> module',modules[i]);
-        var requrieType = this.getRequireType(modules[i]);
+        cMod = modules[i];
+        if(!this.validateModule( cMod )) continue;
+        Log.log('loadResource -> module', cMod);
+        var requrieType = this.getRequireType( cMod );
         Log.log('loadResource -> requrieType',requrieType)
         if(1 == requrieType) // module
-            resFiles.push(this.loadFiles(modules[i]));
+            resFiles.push(this.loadFiles( cMod ));
         else if(2 == requrieType) // property
-            resFiles.push(this.loadFile( this.getRealFilePath( this.stringToPath(modules[i]) ) + '.js' ));
+            resFiles.push(this.loadFile( this.getRealFilePath( this.stringToPath( cMod ) ) + '.js' ));
 
     }
 
