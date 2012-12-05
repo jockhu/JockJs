@@ -212,13 +212,15 @@
         },
 
         appendTo:function(element){
-            (J.isString(element) ? dom(element) : element).append(this.get());
+            getRealElement(element).append(this.get());
             return this;
         },
 
         html:function(html){
             var self = this.get();
             if(!J.isUndefined(html)){
+                if(html.nodeType === 1)
+                    return this.append(html)
                 self.innerHTML = html;
                 return this;
             }
@@ -295,6 +297,29 @@
         },
 
         /**
+         * 将目标元素添加到基准元素第一个子节点之前
+         * @param element 插入的元素
+         */
+        insertFirst:function (element) {
+            var first = this.first();
+            first ? first.insertBefore(element) : this.append(element);
+            return this;
+        },
+
+        insertFirstTo:function (element) {
+            getRealElement(element).insertFirst(this.get());
+            return this;
+        },
+
+        /**
+         * 将目标元素添加到基准元素最后一个子节点之后
+         * @param element 插入的元素
+         */
+        insertLast:function (element) {
+            return this.append(element)
+        },
+
+        /**
          * 获取目标元素的第一个元素节点
          */
         first:function () {
@@ -322,6 +347,11 @@
             return matchNode(this.get(), 'previousSibling', 'previousSibling');
         },
 
+        /**
+         *
+         * @param expression '.className' | 'tagName' | '.className tagName'
+         * @return {DOMObject}
+         */
         up: function (expression) {
             var element = this.get();
             if (arguments.length == 0) return dom(element.parentNode);
@@ -336,6 +366,11 @@
             return null;
         },
 
+        /**
+         *
+         * @param expression '.className' | 'tagName' | '.className tagName'
+         * @return {DOMObject}
+         */
         down: function (expression) {
             var element = this.get();
             if (arguments.length == 0) return this.first();
@@ -362,6 +397,10 @@
         s:s,
         g:g
     });
+
+    function getRealElement(element){
+        return J.isString(element) ? dom(element) : element
+    }
 
     function matchNode(element, direction, start) {
         for (var node = element[start]; node; node = node[direction]) {
@@ -420,7 +459,7 @@
         // J.sizzle
         if (J.sizzle) return J.merge(this, J.sizzle(selector, element));
 
-        var match = selector ? selector.match(/^(\.)?(\w+)(\s(\w+))?/) : null, result = [], trim = J.trim, len, i, elements, node, tagName, gC;
+        var match = selector ? selector.match(/^(\.)?(\w+)(\s(\w+))?/) : null, result = [], len, i, elements, node, tagName;
         element = element || D;
         // div       -> [  "div"  ,   undefined  ,   "div"  ,   undefined  ,   undefined  ]
         // .ttt      -> [  ".ttt"  ,   "."  ,   "ttt"  ,   undefined  ,   undefined  ]
