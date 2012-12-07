@@ -21,8 +21,8 @@
  * @param {string} type 事件类型
  * @param {Function} handler 需要添加的监听器
  * @param {Object} data 需要传递的数据 ，通过 event.data 获取
- * @param {Boolean} preventDefault 是否
- * @param {Boolean} stopPropagation 需要添加的监听器
+ * @param {Boolean} preventDefault 阻止事件默认行为
+ * @param {Boolean} stopPropagation 停止事件冒泡
  *
  * @shortcut on
  * @meta standard

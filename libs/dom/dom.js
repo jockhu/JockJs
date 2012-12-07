@@ -185,10 +185,10 @@
             var element = this.get(), elementStyle = element.style, match;
             if (J.isString(styles)) {
                 element.style.cssText += ';' + styles;
-                styles.indexOf(opacity) > 0 && element.setOpacity(styles.match(/opacity:\s*(\d?\.?\d*)/)[1]);
+                styles.indexOf(opacity) > 0 && this.setOpacity(styles.match(/opacity:\s*(\d?\.?\d*)/)[1]);
             }
             for (var property in styles)
-                if (property == opacity) element.setOpacity(styles[property]);
+                if (property == opacity) this.setOpacity(styles[property]);
                 else
                 elementStyle[(property == float || property == cssFloat) ?
                 (elementStyle.styleFloat ? 'styleFloat' : cssFloat) :

@@ -91,7 +91,7 @@
             for (var k in items) {
                 inputs.push("<input type='hidden' name='" + k + "' value='" + items[k] + "' />")
             }
-            inputs.push("<input type='hidden' name='callback' value='" + opts.callback + "' />");
+            opts.callback && inputs.push("<input type='hidden' name='callback' value='" + opts.callback + "' />");
             form.innerHTML = inputs.join('');
             form.action = opts.url;
             form.method = 'post';
@@ -99,8 +99,10 @@
             ifContainer.appendChild(form);
             body.insertBefore( ifContainer, body.firstChild );
             D.getElementById(guid).onload = function(){
-                if(body && ifContainer.parentNode)
-                    body.removeChild(ifContainer)
+                setTimeout(function(){
+                    if(body && ifContainer.parentNode)
+                        body.removeChild(ifContainer)
+                },50);
             };
             form.submit();
         }
