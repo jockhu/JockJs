@@ -43,7 +43,7 @@
     function setCookie(name, value, date, domain, path, secure){
         D.cookie = name + "=" + String(encode( value )) +
                 ((date) ? ";expires=" + date.toGMTString() : "") +
-                (validString(path) ? ";path=" + path : "/") +
+                (validString(path) ? ";path=" + path : "") +
                 (validString(domain) ? ";domain=" + domain : "" ) +
                 ((secure) ? ";secure" : "" );
     }
@@ -91,11 +91,9 @@
          * @return null
          */
         rmCookie: function(name, domain, path, secure){
-            if (this.getCookie(name)){
-                var expires = new Date(0);
-                setCookie(name, '', expires, domain, path, secure)
-            }
-
+            var expires = new Date();
+            expires.setTime(expires.getTime() - 10000);
+            setCookie(name, '', expires, domain, path, secure)
         }
     };
 
