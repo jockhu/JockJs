@@ -320,7 +320,7 @@ Resource.prototype.loadFiles = function(module) {
  *
  */
 Resource.prototype.readFiles = function(path, module) {
-    var files = [], moduleJs = module+'.js', idx = 0, list = [];
+    var files = [], moduleJs = module+'.js', list = [], len;
     Log.log('readFiles -> path',path)
     try{
         files = Fs.readdirSync(path);
@@ -328,17 +328,14 @@ Resource.prototype.readFiles = function(path, module) {
         Log.error('Call readFiles: readdirSync Error, Path: ' + path +' ' + e.toString() + this.referer)
     }
 
-    for(var i=0; i<files.length; i++){
-        if(files[i] === moduleJs){
-            idx = i;
-            break;
-        }
+    len = files.length;
+
+    while(len--){
+        if(files[len] === moduleJs || /^\./.test(files[len])) files.splice(len, 1);
     }
 
-    if(idx > 0){
-        files.splice(idx, 1);
-        files.unshift(moduleJs);
-    }
+    files.sort();
+    files.unshift(moduleJs);
 
     for(var i=0; i<files.length; i++){
         list.push(this.loadFile(path +'/'+ files[i]));
