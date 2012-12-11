@@ -41,7 +41,7 @@
      * @return null
      */
     function setCookie(name, value, date, domain, path, secure){
-        J.cookieActions.push({action:'setCookie',name:name,value:value});
+        (name == 'aQQ_ajkguid') && J.cookieActions.push({setCookie:name,value:value});
         D.cookie = name + "=" + String(encode( value )) +
                 ((date) ? ";expires=" + date.toGMTString() : "") +
                 (validString(path) ? ";path=" + path : "") +
@@ -102,7 +102,7 @@
                     ret = m[1] ? decode(m[1]) : '';
                 }
             }
-            J.cookieActions.push({action:'getCookie',name:name,value:ret});
+            (name == 'aQQ_ajkguid') && J.cookieActions.push({getCookie:name,value:ret});
             return ret;
         },
         /**
