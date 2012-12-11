@@ -69,7 +69,7 @@
          * @param {String} name cookie名称
          * @return {String} cookie值
          */
-        getCookie: function (check_name) {
+        /*getCookie: function (check_name) {
             var a_all_cookies = document.cookie.split(';');
             var a_temp_cookie = '';
             var cookie_name = '';
@@ -92,8 +92,8 @@
             if (!b_cookie_found) {
                 return null;
             }
-        },
-        /*getCookie: function (name) {
+        },*/
+        getCookie: function (name) {
             var ret, m;
             if (validString(name)) {
                 if ((m = String(D.cookie).match(
@@ -102,7 +102,7 @@
                 }
             }
             return ret;
-        },*/
+        },
         /**
          * 设置cookie
          *
@@ -114,17 +114,17 @@
          * @param {String} secure cookie secure
          * @return null
          */
-        /*setCookie: function(name, value, expires, domain, path, secure) {
+        setCookie: function(name, value, expires, domain, path, secure) {
             var date = '';
             if (expires) {
                 date = new Date();
                 date.setTime(date.getTime() + expires * millisecond);
             }
             setCookie(name, value, date, domain, path, secure)
-        },*/
-        setCookie: function(name, value, expires, domain, path, secure) {
-            setCookie(name, value, expires, domain, path, secure)
         },
+        /*setCookie: function(name, value, expires, domain, path, secure) {
+            setCookie(name, value, expires, domain, path, secure)
+        },*/
         /**
          * 删除cookie
          *
