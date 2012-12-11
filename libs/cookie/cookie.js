@@ -40,15 +40,15 @@
      * @param {String} secure cookie secure
      * @return null
      */
-    /*function setCookie(name, value, date, domain, path, secure){
+    function setCookie(name, value, date, domain, path, secure){
         D.cookie = name + "=" + String(encode( value )) +
                 ((date) ? ";expires=" + date.toGMTString() : "") +
                 (validString(path) ? ";path=" + path : "") +
                 (validString(domain) ? ";domain=" + domain : "" ) +
                 ((secure) ? ";secure" : "" );
-    }*/
+    }
 
-    function setCookie(name, value, expires, domain, path, secure){
+    /*function setCookie(name, value, expires, domain, path, secure){
         var today = new Date();
         today.setTime(today.getTime());
         if (expires) {
@@ -60,7 +60,7 @@
         ((path) ? ";path=" + path: "") +
         ((domain) ? ";domain=" + domain: "") +
         ((secure) ? ";secure": "");
-    }
+    }*/
 
     var cookie = {
         /**
