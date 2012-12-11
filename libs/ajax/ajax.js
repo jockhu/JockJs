@@ -89,7 +89,7 @@
             ifContainer.style.display = 'none';
 
             for (var k in items) {
-                inputs.push("<input type='hidden' name='" + k + "' value='" + encode(items[k]) + "' />")
+                inputs.push("<input type='hidden' name='" + k + "' value='" + items[k] + "' />")
             }
             opts.callback && inputs.push("<input type='hidden' name='callback' value='" + opts.callback + "' />");
             form.innerHTML = inputs.join('');
