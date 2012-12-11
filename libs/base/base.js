@@ -36,8 +36,6 @@
         CL:PageStart
     };
 
-    _.cookieActions = [];
-
     var version = '__VERSION__', readyList = [], callList = [], jsModules = [], cssModules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, A = arguments, U = A[2],  s = A[1].split(','), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = W.setTimeout, conf = {
             v:version, u:jsH, m:'/', c:'utf-8', s:cssH
         }, S = D[rS], Dt = D[aT], c2t = {}, IS = {}, nu = navigator.userAgent, R = RegExp, js = 'js', css = 'css';

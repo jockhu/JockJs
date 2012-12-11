@@ -41,27 +41,12 @@
      * @return null
      */
     function setCookie(name, value, date, domain, path, secure){
-        (name == 'aQQ_ajkguid') && J.cookieActions.push({setCookie:name,value:value});
-        D.cookie = name + "=" + String(encode( value )) +
+        D.cookie = decode(name) + "=" + String(encode( value )) +
                 ((date) ? ";expires=" + date.toGMTString() : "") +
-                (validString(path) ? ";path=" + path : "") +
+                ";path=" + (validString(path) ? path : "/") +
                 (validString(domain) ? ";domain=" + domain : "" ) +
                 ((secure) ? ";secure" : "" );
     }
-
-    /*function setCookie(name, value, expires, domain, path, secure){
-        var today = new Date();
-        today.setTime(today.getTime());
-        if (expires) {
-            expires = expires * 1000 * 60 * 60 * 24;
-        }
-        var expires_date = new Date(today.getTime() + (expires));
-        document.cookie = name + "=" + escape(value) +
-        ((expires) ? ";expires=" + expires_date.toGMTString() : "") +
-        ((path) ? ";path=" + path: "") +
-        ((domain) ? ";domain=" + domain: "") +
-        ((secure) ? ";secure": "");
-    }*/
 
     var cookie = {
         /**
@@ -70,39 +55,13 @@
          * @param {String} name cookie名称
          * @return {String} cookie值
          */
-        /*getCookie: function (check_name) {
-            var a_all_cookies = document.cookie.split(';');
-            var a_temp_cookie = '';
-            var cookie_name = '';
-            var cookie_value = '';
-            var b_cookie_found = false;
-            for (i = 0; i < a_all_cookies.length; i++) {
-                a_temp_cookie = a_all_cookies[i].split('=');
-                cookie_name = a_temp_cookie[0].replace(/^\s+|\s+$/g, '');
-                if (cookie_name == check_name) {
-                    b_cookie_found = true;
-                    if (a_temp_cookie.length > 1) {
-                        cookie_value = unescape(a_temp_cookie[1].replace(/^\s+|\s+$/g, ''));
-                    }
-                    return cookie_value;
-                    break;
-                }
-                a_temp_cookie = null;
-                cookie_name = '';
-            }
-            if (!b_cookie_found) {
-                return null;
-            }
-        },*/
         getCookie: function (name) {
-            var ret, m;
+            var ret = null, m;
             if (validString(name)) {
-                if ((m = String(D.cookie).match(
-                    new RegExp('(?:^| )' + name + '(?:(?:=([^;]*))|;|$)')))) {
+                if ((m = String(D.cookie).match(new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)")))) {
                     ret = m[1] ? decode(m[1]) : '';
                 }
             }
-            (name == 'aQQ_ajkguid') && J.cookieActions.push({getCookie:name,value:ret});
             return ret;
         },
         /**
@@ -124,9 +83,6 @@
             }
             setCookie(name, value, date, domain, path, secure)
         },
-        /*setCookie: function(name, value, expires, domain, path, secure) {
-            setCookie(name, value, expires, domain, path, secure)
-        },*/
         /**
          * 删除cookie
          *
