@@ -247,18 +247,18 @@
          */
         function fire(type) {
             type = 'on' + type;
-            var handler = eventHandlers[type];
+            var handler = eventHandlers[type], responseRet;
             if (handler) {
                 opts.timeout && clearTimeout(timer);
                 if (type != 'onSuccess') {
                     handler(xhr);
                 } else {
                     try {
-                        xhr.responseText;
+                        responseRet = (opts.type == 'json') ? (new Function("return (" + xhr.responseText + ")"))() : xhr.responseText
                     } catch (error) {
                         return handler(xhr);
                     }
-                    handler(opts.type == 'json' ? (new Function("return (" + xhr.responseText + ")"))() : xhr.responseText);
+                    handler(responseRet);
                 }
             }
         }

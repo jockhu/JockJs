@@ -112,7 +112,7 @@
 
         remove:function(){
             var element = this.get();
-            element.parentNode.removeChild(element);
+            element.parentNode && element.parentNode.removeChild(element);
             return this
         },
 

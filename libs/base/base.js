@@ -38,7 +38,7 @@
 
     var version = '__VERSION__', readyList = [], callList = [], jsModules = [], cssModules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, A = arguments, U = A[2],  s = A[1].split(','), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = W.setTimeout, conf = {
             v:version, u:jsH, m:'/', c:'utf-8', s:cssH
-        }, S = D[rS], Dt = D[aT], c2t = {}, IS = {}, nu = navigator.userAgent, R = RegExp, js = 'js', css = 'css';
+        }, S = D[rS], Dt = D[aT], c2t = {}, IS = {}, nu = navigator.userAgent, R = RegExp, JS = 'js', CSS = 'css';
 
 
     /**
@@ -211,14 +211,14 @@
     function loadResource(url, type, callback) {
         var n;
         IS.isFunction(type) && (callback = type);
-        type = /\.(js|css)/g.exec(url.toLowerCase()), type = type ? type[1] : js;
-        if (js === type) {
+        type = /\.(js|css)/g.exec(url.toLowerCase()), type = type ? type[1] : JS;
+        if (JS === type) {
             n = D.createElement('script');
             n.type = 'text/javascript';
             n.src = url;
             n.async = 'true';
             n.charset = conf.c;
-        } else if (css === type) {
+        } else if (CSS === type) {
             n = D.createElement('link');
             n.type = 'text/css';
             n.rel = 'stylesheet';
@@ -244,8 +244,8 @@
      * @return {String} 资源地址
      */
     function buildUrl(m,t) {
-        t || (t = js);
-        return conf[t == js ? 'u':'s'] + m.join(conf.m) + conf.m + conf.v + '.' + t;
+        t || (t = JS);
+        return conf[t == JS ? 'u':'s'] + m.join(conf.m) + conf.m + conf.v + '.' + t;
     }
 
     /**
@@ -255,13 +255,13 @@
      * @return {Boolean}
      */
     function moduleExits(m,t) {
-        if(t == css) return inArray(m, cssModules) > -1;
+        if(t == CSS) return inArray(m, cssModules) > -1;
         var o = m.split('.'), n = o.length, M = _[o[0]];
         return (n === 1 && M) ? true : (n === 2 && M && M[o[1]]) ? true : false;
     }
 
     /**
-     * 过滤模块
+     * 过滤重复或已存在的模块
      * @param m 模块数组
      * @param {String} t 类型
      * @return {Array}
@@ -286,7 +286,7 @@
         l = m.length;
         while(l--){
             K = m[l];
-            if(inArray(K, R) == -1 && !moduleExits(K,t)){
+            if(inArray(K, R) == -1 && ( t == CSS || !moduleExits(K,t) )){
                 R.push(K);
             }
         }
@@ -315,6 +315,8 @@
      *         多个模块用数组的方式 ['module1','module2'] , 只依赖一个模块可直接传入模块字符串
      * @param {Function} callback 回调函数
      *         模块如果存在或加载完成后执行回调函数
+     * @param {String} type 资源类型
+     *         模块如果存在或加载完成后执行回调函数
      * @param {Boolean|Number} delay || undefined
      *         指定数字为延迟执行，单位毫秒，
      *         留空则等待ready后合并成一个请求
@@ -324,7 +326,7 @@
     function use(require, callback, type, delay) {
         var mod, mods = [], cmods = [], i = 0, isJs;
 
-        (type != js && type != css) && (delay = type, type = js), isJs = (type == js);
+        (type != JS && type != CSS) && (delay = type, type = JS), isJs = (type == JS);
 
         if (IS.isArray(require)) {
             while ((mod = require[i++])) (isJs ? mods : cmods).push(mod);
@@ -359,20 +361,20 @@
      */
     ready(function () {
 
-        var mods = filterModules(jsModules);
+        var mods = filterModules(jsModules, JS);
         function fCallbacks(){
             var fn , i = 0;
             while ( fn = callList[i++] ) fn.call();
             jsModules = callList = null;
         }
         if (mods.length) {
-            loadResource(buildUrl(mods), js, fCallbacks);
+            loadResource(buildUrl(mods, JS), JS, fCallbacks);
             mods = [];
         }else fCallbacks();
 
-        mods = filterModules(cssModules, css);
+        mods = filterModules(cssModules, CSS);
         if (mods.length) {
-            loadResource(buildUrl(mods, css), css);
+            loadResource(buildUrl(mods, CSS), CSS);
             cssModules = [];
         }
 
@@ -391,8 +393,8 @@
      */
     Function.prototype.require = function () {
         var a = arguments, args = slice.call(a), cssM = args[1];
-        (IS.isArray(cssM) || IS.isString(cssM)) && use.apply(_, [].concat([cssM], [null,css], slice.call(a,2))) , args.splice(1,1);
-        args.splice(1,0,this,js);
+        (IS.isArray(cssM) || IS.isString(cssM)) && use.apply(_, [].concat([cssM], [null,CSS], slice.call(a,2))) , args.splice(1,1);
+        args.splice(1,0,this,JS);
         use.apply(_, args)
     };
 

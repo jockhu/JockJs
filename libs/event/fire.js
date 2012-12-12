@@ -30,7 +30,7 @@ J.fire = J.event.fire = function(element, type, data, bubble) {
 
     var event, E = J.event, DA = E.DA, LO = E.LO, D = document;
 
-    if( !(element = E.g(element)) ) return false;
+    if( (element = E.g(element)).length == 0 ) return false;
 
     bubble = bubble || true;
 
