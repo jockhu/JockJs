@@ -102,7 +102,7 @@
                 setTimeout(function(){
                     if(body && ifContainer.parentNode)
                         body.removeChild(ifContainer)
-                },50);
+                },2000);
             };
             form.submit();
         }
