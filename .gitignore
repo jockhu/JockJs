@@ -1,0 +1,8 @@
+.*.swp
+.settings
+.project
+.buildpath
+.reviewboardrc
+nohup.out
+.svn
+.metadata
