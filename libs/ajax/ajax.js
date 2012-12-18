@@ -48,6 +48,9 @@
 
         J.isString(url) ? (opts.url = url) : (opts = J.mix(opts, url || {}, true));
         J.isFunction(options) ? (opts.onSuccess = options) : (opts = J.mix(opts, options || {}, true));
+
+        if(opts.url == '') return null;
+
         method = method.toUpperCase();
 
         J.each("onSuccess onFailure onBeforerequest onTimeout".split(' '), function (i, k) {
