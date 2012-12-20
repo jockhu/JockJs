@@ -36,9 +36,21 @@
         CL:PageStart
     };
 
-    var version = '__VERSION__', readyList = [], callList = [], jsModules = [], cssModules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, A = arguments, U = A[2],  s = A[1].split(','), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = W.setTimeout, conf = {
+    var version = '__VERSION__', readyList = [], callList = [], jsModules = [], cssModules = [], D = W.document, h = D.getElementsByTagName('head')[0], dE = D.documentElement, A = arguments, U = A[2],  s = A[1].split(','), aL = s[0], rL = s[1], aT = s[2], dT = s[3], cL = s[4], sC = s[5], rS = s[6], C = s[7], ld = s[8], old = 'on' + ld, isReady = 0, bind = 0, sT = W.setTimeout,sI = W.setInterval, conf = {
             v:version, u:jsH, m:'/', c:'utf-8', s:cssH
         }, S = D[rS], Dt = D[aT], c2t = {}, IS = {}, nu = navigator.userAgent, R = RegExp, JS = 'js', CSS = 'css';
+
+
+    /**
+     * 增加引用，便于调用
+     * @type {Object}
+     */
+    var link = {
+        W:W,
+        D:D,
+        ST:sT,
+        SI:sI
+    };
 
 
     /**
@@ -50,7 +62,7 @@
      *
      */
     function each(object, callback) {
-        var name, i = 0, length = object.length, isObj = length === U;
+        var i = 0, length = object.length, isObj = length === U;
         if (isObj) {
             for (I in object) {
                 if (callback.call(object[ I ], I, object[ I ]) === false) {
@@ -453,6 +465,7 @@
      */
     mix(_, base);
     mix(_, IS);
+    mix(_, link);
 
     W['J'] = _;
 
