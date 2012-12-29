@@ -38,16 +38,18 @@
         onBeforerequest:'',
         onTimeout:'',
         cache:true,
-        timeout:'',
+        timeout:0, // 毫秒
         type:''
-    }, encode = encodeURIComponent, ajaxObj;
+    }, encode = encodeURIComponent, ajaxObj, D = document, head = D.head || D.getElementsByTagName( "head" )[0], aboutBlank = 'about:blank';
 
     function Ajax(url, options, method) {
 
-        var xhr, opts = defaultOpts, eventHandlers = {}, timer, D = document;
+        var xhr, opts = defaultOpts, eventHandlers = {}, timerHander, timeout;
 
         J.isString(url) ? (opts.url = url) : (opts = J.mix(opts, url || {}, true));
         J.isFunction(options) ? (opts.onSuccess = options) : (opts = J.mix(opts, options || {}, true));
+
+        timeout = parseInt(opts.timeout);
 
         if(opts.url == '') return null;
 
@@ -63,33 +65,65 @@
             return ajax();
         }
 
+        function unloadDispose(callback){
+            var U = 'unload';
+            if (J.ua.ie)
+                W.attachEvent('on'+U, callback);
+            else
+                W.addEventListener(U, callback, false);
+        }
+
+        function clearTimeOut(){
+            (timeout > 0 && timerHander) && clearTimeout(timerHander);
+        }
+
+        function domDispose(element, container, isAbort, state){
+            if (isAbort || !state || /loaded|complete/.test(state)) {
+                clearTimeOut();
+                if(head && element){
+                    element.src = aboutBlank;
+                    element.onload = element.onreadystatechange = null;
+                    element = container||element;
+                    if (element && element.parentNode) {
+                        head.removeChild(element);
+                    }
+                    element = undefined;
+                }
+                isAbort && fire('Failure');
+            }
+        }
+
+        function domLoad(element, container){
+            element.onload = element.onreadystatechange = function (_, isAbort) {
+                if (isAbort || !element.readyState || /loaded|complete/.test(element.readyState)) {
+                    domDispose(element, container, isAbort, element.readyState)
+                }
+            };
+            if (timeout > 0) {
+                timerHander = setTimeout(function () {
+                    fire("Timeout");
+                    domDispose(element, container, true)
+                }, timeout);
+            }
+        }
+
         function getJSONP() {
-            var script = D.createElement('script'), head = D.head || D.getElementsByTagName( "head" )[0];
+            var script = D.createElement('script');
+            domLoad(script);
             script.async = opts.async;
             script.charset = 'utf-8';
             script.src = buildUrl();
-            script.onload = script.onreadystatechange = function (_, isAbort) {
-                if (isAbort || !script.readyState || /loaded|complete/.test(script.readyState)) {
-                    script.onload = script.onreadystatechange = null;
-                    if (head && script.parentNode) {
-                        head.removeChild(script);
-                    }
-                    script = undefined;
-                    isAbort && fire('Failure');
-                }
-            };
             head.insertBefore( script, head.firstChild );
         }
 
         function postJSONP() {
-            var guid = '__RGID' + J.getTime().toString(16),
-                body = D.body || D.getElementsByTagName( "body" )[0],
-                ifContainer = D.createElement('div'),
+            var guid = 'J__RGID' + J.getTime().toString(16),
+                sojContainer = D.createElement('div'),
                 form = D.createElement('form'),
                 inputs = [], items = opts.data;
 
-            ifContainer.innerHTML = '<iframe style="display:" id="' + guid + '" name="' + guid + '"></iframe>';
-            ifContainer.style.display = 'none';
+            sojContainer.innerHTML = '<iframe id="' + guid + '" name="' + guid + '"></iframe>';
+            sojContainer.style.display = 'none';
 
             for (var k in items) {
                 inputs.push("<input type='hidden' name='" + k + "' value='" + items[k] + "' />")
@@ -99,20 +133,26 @@
             form.action = opts.url;
             form.method = 'post';
             form.target = guid;
-            ifContainer.appendChild(form);
-            body.insertBefore( ifContainer, body.firstChild );
-            D.getElementById(guid).onload = function(){
-                setTimeout(function(){
-                    if(body && ifContainer.parentNode)
-                        body.removeChild(ifContainer)
-                },2000);
-            };
+            sojContainer.appendChild(form);
+            head.appendChild( sojContainer, head.firstChild );
+
+            var a = D.getElementById(guid);
+
+            unloadDispose( function(){
+                domDispose(head, sojContainer, true);
+            } );
+
+            a && domLoad(a, sojContainer);
+
             form.submit();
+            form.action = aboutBlank;
+            form.method = 'get';
+            form.target = '_self';
         }
 
         function ajax() {
             try {
-                var async = opts.async, headers = opts.headers, data = opts.data, timeout = opts.timeout, aUrl;
+                var async = opts.async, headers = opts.headers, data = opts.data, aUrl;
 
                 xhr = getXHR();
 
@@ -146,7 +186,7 @@
                 fire('Beforerequest');
 
                 if (timeout) {
-                    timer = setTimeout(function () {
+                    timerHander = setTimeout(function () {
                         xhr.onreadystatechange = function () {
                         };
                         xhr.abort();
@@ -212,8 +252,7 @@
                 } else {
                     fire('Failure');
                 }
-                xhr.onreadystatechange = function () {
-                };
+                xhr.onreadystatechange = function () {};
                 if (opts.async) {
                     xhr = null;
                 }
@@ -252,7 +291,7 @@
             type = 'on' + type;
             var handler = eventHandlers[type], responseRet;
             if (handler) {
-                opts.timeout && clearTimeout(timer);
+                clearTimeOut();
                 if (type != 'onSuccess') {
                     handler(xhr);
                 } else {
