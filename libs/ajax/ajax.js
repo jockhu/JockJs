@@ -40,7 +40,7 @@
         cache:true,
         timeout:0, // 毫秒
         type:''
-    }, encode = encodeURIComponent, ajaxObj, D = document, head = D.head || D.getElementsByTagName( "head" )[0], aboutBlank = 'about:blank';
+    }, encode = encodeURIComponent, ajaxObj, D = document, head = D.head || D.getElementsByTagName( "head" )[0], aboutBlank = 'about:blank', I = 0;
 
     function Ajax(url, options, method) {
 
@@ -65,44 +65,33 @@
             return ajax();
         }
 
-        function unloadDispose(callback){
-            var U = 'unload';
-            if (J.ua.ie)
-                W.attachEvent('on'+U, callback);
-            else
-                W.addEventListener(U, callback, false);
-        }
-
         function clearTimeOut(){
             (timeout > 0 && timerHander) && clearTimeout(timerHander);
         }
 
-        function domDispose(element, container, isAbort, state){
-            if (isAbort || !state || /loaded|complete/.test(state)) {
-                clearTimeOut();
-                if(head && element){
-                    element.src = aboutBlank;
-                    element.onload = element.onreadystatechange = null;
-                    element = container||element;
-                    if (element && element.parentNode) {
-                        head.removeChild(element);
-                    }
-                    element = undefined;
+        function domDispose(element, container){
+            clearTimeOut();
+            if(head && element){
+                element.onload = element.onreadystatechange = null;
+                element = container||element;
+                if (element && element.parentNode) {
+                    head.removeChild(element);
                 }
-                isAbort && fire('Failure');
+                element = undefined;
             }
         }
 
         function domLoad(element, container){
             element.onload = element.onreadystatechange = function (_, isAbort) {
                 if (isAbort || !element.readyState || /loaded|complete/.test(element.readyState)) {
-                    domDispose(element, container, isAbort, element.readyState)
+                    isAbort && fire('Failure');
+                    domDispose(element, container);
                 }
             };
             if (timeout > 0) {
                 timerHander = setTimeout(function () {
                     fire("Timeout");
-                    domDispose(element, container, true)
+                    domDispose(element, container)
                 }, timeout);
             }
         }
@@ -117,7 +106,7 @@
         }
 
         function postJSONP() {
-            var guid = 'J__RGID' + J.getTime().toString(16),
+            var guid = 'J__RGID' + J.getTime().toString(16) + (++I),
                 sojContainer = D.createElement('div'),
                 form = D.createElement('form'),
                 inputs = [], items = opts.data;
@@ -137,10 +126,6 @@
             head.appendChild( sojContainer, head.firstChild );
 
             var a = D.getElementById(guid);
-
-            unloadDispose( function(){
-                domDispose(head, sojContainer, true);
-            } );
 
             a && domLoad(a, sojContainer);
 
