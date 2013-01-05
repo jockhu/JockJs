@@ -69,6 +69,20 @@
             (timeout > 0 && timerHander) && clearTimeout(timerHander);
         }
 
+        function domDispose(element, container){
+            clearTimeOut();
+            setTimeout(function(){
+                if(head && element){
+                    element.onload = element.onreadystatechange = null;
+                    element = container||element;
+                    if (element && element.parentNode) {
+                        head.removeChild(element);
+                    }
+                    element = undefined;
+                }
+            },1000);
+        }
+
         function domLoad(element, container){
             element.onload = element.onreadystatechange = function (_, isAbort) {
                 if (isAbort || !element.readyState || /loaded|complete/.test(element.readyState)) {
@@ -81,18 +95,6 @@
                     fire("Timeout");
                     domDispose(element, container)
                 }, timeout);
-            }
-
-            function domDispose(element, container){
-                clearTimeOut();
-                if(head && element){
-                    element.onload = element.onreadystatechange = null;
-                    element = container||element;
-                    if (element && element.parentNode) {
-                        head.removeChild(element);
-                    }
-                    element = undefined;
-                }
             }
         }
 
@@ -123,7 +125,7 @@
             form.method = 'post';
             form.target = guid;
             sojContainer.appendChild(form);
-            head.appendChild( sojContainer, head.firstChild );
+            head.insertBefore( sojContainer, head.firstChild );
 
             var a = D.getElementById(guid);
 
