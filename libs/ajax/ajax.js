@@ -38,7 +38,7 @@
         onBeforerequest:'',
         onTimeout:'',
         cache:true,
-        timeout:0, // 毫秒
+        timeout:5000, // 毫秒
         type:''
     }, encode = encodeURIComponent, ajaxObj, D = document, head = D.head || D.getElementsByTagName( "head" )[0], aboutBlank = 'about:blank', I = 0;
 
@@ -62,23 +62,11 @@
         if (opts.type == 'jsonp') {
             method == 'GET' ? getJSONP() : postJSONP();
         } else {
-            return ajax();
+            return request();
         }
 
         function clearTimeOut(){
             (timeout > 0 && timerHander) && clearTimeout(timerHander);
-        }
-
-        function domDispose(element, container){
-            clearTimeOut();
-            if(head && element){
-                element.onload = element.onreadystatechange = null;
-                element = container||element;
-                if (element && element.parentNode) {
-                    head.removeChild(element);
-                }
-                element = undefined;
-            }
         }
 
         function domLoad(element, container){
@@ -94,6 +82,18 @@
                     domDispose(element, container)
                 }, timeout);
             }
+
+            function domDispose(element, container){
+                clearTimeOut();
+                if(head && element){
+                    element.onload = element.onreadystatechange = null;
+                    element = container||element;
+                    if (element && element.parentNode) {
+                        head.removeChild(element);
+                    }
+                    element = undefined;
+                }
+            }
         }
 
         function getJSONP() {
@@ -106,7 +106,7 @@
         }
 
         function postJSONP() {
-            var guid = 'J__RGID' + J.getTime().toString(16) + (++I),
+            var guid = 'J__ID' + J.getTime().toString(16) + '' + (++I),
                 sojContainer = D.createElement('div'),
                 form = D.createElement('form'),
                 inputs = [], items = opts.data;
@@ -130,12 +130,13 @@
             a && domLoad(a, sojContainer);
 
             form.submit();
-            form.action = aboutBlank;
+            /*form.action = aboutBlank;
             form.method = 'get';
-            form.target = '_self';
+            form.target = '_self';*/
+            form = null;
         }
 
-        function ajax() {
+        function request() {
             try {
                 var async = opts.async, headers = opts.headers, data = opts.data, aUrl;
 
@@ -170,13 +171,12 @@
 
                 fire('Beforerequest');
 
-                if (timeout) {
+                if (timeout > 0) {
                     timerHander = setTimeout(function () {
-                        xhr.onreadystatechange = function () {
-                        };
+                        xhr.onreadystatechange = function () {};
                         xhr.abort();
                         fire("Timeout");
-                    }, parseInt(timeout));
+                    }, timeout);
                 }
 
                 xhr.send(data);
@@ -225,6 +225,7 @@
          */
         function stateChangeHandler() {
             if (xhr.readyState == 4) {
+                clearTimeOut();
                 try {
                     var stat = xhr.status;
                 } catch (ex) {
@@ -276,7 +277,6 @@
             type = 'on' + type;
             var handler = eventHandlers[type], responseRet;
             if (handler) {
-                clearTimeOut();
                 if (type != 'onSuccess') {
                     handler(xhr);
                 } else {
