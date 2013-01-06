@@ -70,9 +70,7 @@
         }
 
         function domDispose(element, container){
-            clearTimeOut();
             if(head && element){
-
                 element = container||element;
                 if (element && element.parentNode) {
                     head.removeChild(element);
@@ -84,11 +82,12 @@
         function domLoad(element, container){
             element.onload = element.onreadystatechange = function (_, isAbort) {
                 if (isAbort || !element.readyState || /loaded|complete/.test(element.readyState)) {
+                    clearTimeOut();
                     element.onload = element.onreadystatechange = null;
                     isAbort && fire('Failure');
                     setTimeout(function(){
                         domDispose(element, container);
-                    },1000);
+                    },500);
                 }
             };
             if (timeout > 0) {
@@ -114,7 +113,7 @@
                 form = D.createElement('form'),
                 inputs = [], items = opts.data;
 
-            sojContainer.innerHTML = '<iframe id="' + guid + '" name="' + guid + '">ddddddddddd</iframe>';
+            sojContainer.innerHTML = '<iframe id="' + guid + '" name="' + guid + '"></iframe>';
             sojContainer.style.display = 'none';
 
             for (var k in items) {
@@ -122,7 +121,7 @@
             }
             opts.callback && inputs.push("<input type='hidden' name='callback' value='" + opts.callback + "' />");
             form.innerHTML = inputs.join('');
-            form.action = opts.url+'&'+guid;
+            form.action = opts.url;
             form.method = 'post';
             form.target = guid;
             sojContainer.appendChild(form);

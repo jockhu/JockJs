@@ -48,8 +48,8 @@
     var link = {
         W:W,
         D:D,
-        ST:sT,
-        SI:sI
+        St:sT,
+        Si:sI
     };
 
 
