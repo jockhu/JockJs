@@ -71,23 +71,24 @@
 
         function domDispose(element, container){
             clearTimeOut();
-            setTimeout(function(){
-                if(head && element){
-                    element.onload = element.onreadystatechange = null;
-                    element = container||element;
-                    if (element && element.parentNode) {
-                        head.removeChild(element);
-                    }
-                    element = undefined;
+            if(head && element){
+
+                element = container||element;
+                if (element && element.parentNode) {
+                    head.removeChild(element);
                 }
-            },1000);
+                element = undefined;
+            }
         }
 
         function domLoad(element, container){
             element.onload = element.onreadystatechange = function (_, isAbort) {
                 if (isAbort || !element.readyState || /loaded|complete/.test(element.readyState)) {
+                    element.onload = element.onreadystatechange = null;
                     isAbort && fire('Failure');
-                    domDispose(element, container);
+                    setTimeout(function(){
+                        domDispose(element, container);
+                    },1000);
                 }
             };
             if (timeout > 0) {
@@ -113,7 +114,7 @@
                 form = D.createElement('form'),
                 inputs = [], items = opts.data;
 
-            sojContainer.innerHTML = '<iframe id="' + guid + '" name="' + guid + '"></iframe>';
+            sojContainer.innerHTML = '<iframe id="' + guid + '" name="' + guid + '">ddddddddddd</iframe>';
             sojContainer.style.display = 'none';
 
             for (var k in items) {
@@ -121,7 +122,7 @@
             }
             opts.callback && inputs.push("<input type='hidden' name='callback' value='" + opts.callback + "' />");
             form.innerHTML = inputs.join('');
-            form.action = opts.url;
+            form.action = opts.url+'&'+guid;
             form.method = 'post';
             form.target = guid;
             sojContainer.appendChild(form);
@@ -132,6 +133,7 @@
             a && domLoad(a, sojContainer);
 
             form.submit();
+            //a.src = aboutBlank;
             /*form.action = aboutBlank;
             form.method = 'get';
             form.target = '_self';*/
