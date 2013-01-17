@@ -100,7 +100,13 @@ exports.cssPath = '';
  * Default enable access log
  * @const
  */
-exports.enableAccessLog = true;
+exports.enableAccessLog = false;
+
+/**
+ * Default enable error log
+ * @const
+ */
+exports.enableErrorLog = false;
 
 /**
  * Default mineType

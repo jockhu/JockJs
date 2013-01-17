@@ -56,7 +56,8 @@
         error:function(e){
 	        var UTC = (new Date()).toUTCString();
             Log.log('Error:',e +' | '+UTC);
-            writeFile(errorPath, e +' '+UTC);
+            if(conf.enableErrorLog)
+                writeFile(errorPath, e +' '+UTC);
         },
         log: function() {
             if (conf.debug) {

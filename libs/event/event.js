@@ -60,25 +60,19 @@ KEY_INSERT:45,
 
     function extend(event, element, data, preventDefault, stopPropagation) {
         if (!event) return false;
-        var d = 'preventDefault',p = 'stopPropagation';
-        J.mix(event, {
-                currentTarget:event.currentTarget || element,
-                // 取消事件的默认行为
-                preventDefault:event[d] || function () {
-                    event.returnValue = false;
-                },
-                // 阻止冒泡
-                stopPropagation:event[p] || function () {
-                    event.cancelBubble = true;
-                },
+        var d = 'preventDefault',p = 'stopPropagation',c = 'currentTarget';
 
-                stop:function () {
-                    event[d]();
-                    event[p]()
-                }
-            }
-
-        );
+        event[c] || (event[c] = element);
+        event[d] || (event[d] = function () {
+            event.returnValue = false;
+        });
+        event[p] || (event[p] = function () {
+            event.cancelBubble = true;
+        });
+        event.stop = function () {
+            event[d]();
+            event[p]()
+        };
 
         if (preventDefault) event[d]();
         if (stopPropagation) event[p]();
@@ -87,8 +81,6 @@ KEY_INSERT:45,
     }
 
     function getResponder(element, type, handler, data, preventDefault, stopPropagation) {
-        var responder;
-
         return function (event) {
             if (type.indexOf(':') > -1 && event && event.eventName !== type) return false;
             if (!E.MMES && (type === ME || type === ML)) {
@@ -120,7 +112,7 @@ KEY_INSERT:45,
                 a.splice(l, 1);
             }
         });
-    if (!isIE)
+    else
         W.addEventListener(U, function () {}, false);
 
 })(J, window, document);
