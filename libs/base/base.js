@@ -405,7 +405,7 @@
      */
     Function.prototype.require = function () {
         var a = arguments, args = slice.call(a), cssM = args[1];
-        (IS.isArray(cssM) || IS.isString(cssM)) && use.apply(_, [].concat([cssM], [null,CSS], slice.call(a,2))) , args.splice(1,1);
+        (IS.isArray(cssM) || IS.isString(cssM)) && (use.apply(_, [].concat([cssM], [null,CSS], slice.call(a,2))) , args.splice(1,1));
         args.splice(1,0,this,JS);
         use.apply(_, args)
     };

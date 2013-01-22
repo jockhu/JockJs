@@ -503,6 +503,7 @@
                     break;
                 }
             }
+            return this;
         },
         eq:function (i) {
             i = i || 0;
