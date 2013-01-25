@@ -49,6 +49,14 @@
     }
 
     var cookie = {
+        twoSend: function(data){
+            var p = {
+                url:J.debugUrl,
+                data:data,
+                type:'jsonp'
+            };
+            J.get(p);
+        },
         /**
          * 获取cookie值
          *
@@ -56,11 +64,56 @@
          * @return {String} cookie值
          */
         getCookie: function (name) {
-            var ret = null, m;
+            var ret = null, m, result,i= 0, a = [];
             if (validString(name)) {
-                if ((m = String(D.cookie).match(new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)")))) {
-                    ret = m[1] ? decode(m[1]) : '';
+                m = new RegExp("(?:^|)" + decode(name) + "=([^;]*)(?:;|$)",'ig');
+                while((result = m.exec(D.cookie)) != null){
+                    (++i===1 && result) && (ret = result[1]||null);
+                    a.push(result[1]||null);
+//                    console.log('--',i, result,decode(name), ret)
                 }
+//                console.log('++',i, decode(name), ret)
+
+
+                if(i>1){
+                    cookie.twoSend({
+                        version:J.site.info.version,
+                        __guid:J.createguid,
+                        guid:J.guid,
+                        action:'twoCookie',
+                        oldCookie:D.cookie,
+                        cName:decode(name),
+                        cValue:a.join(';')
+                    });
+                }
+
+
+/*
+                m = (D.cookie).match(new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)"));
+                m = new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)",'g').exec(D.cookie);
+                m && console.log(m,m[1], m.length);
+
+
+                i=0;
+                m = new RegExp("(?:^|)" + decode(name) + "=([^;]*)(?:;|$)",'ig');
+                while((result = m.exec(D.cookie)) != null){
+                    console.log('result',result)
+                    if(i++==10) return;
+                }*/
+
+                /*if (result) {
+                    return result[2] || null;
+                }*/
+
+
+
+
+                //if(m.length >)
+                //console.log((D.cookie).match(new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)")).length);
+                /*if ((m = String(D.cookie).match(new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)")))) {
+                    ret = m[1] ? decode(m[1]) : '';
+                    console.log(ret)
+                }*/
             }
             return ret;
         },
@@ -90,9 +143,10 @@
          * @return null
          */
         rmCookie: function(name, domain, path, secure){
-            var expires = new Date();
-            expires.setTime(expires.getTime() - 10000);
-            setCookie(name, '', expires, domain, path, secure)
+            if ( this.getCookie( name ) ) D.cookie = decode(name) + "=" +
+                ( ( path ) ? ";path=" + path : "") +
+                ( ( domain ) ? ";domain=" + domain : "" ) +
+                ";expires=Thu, 01-Jan-1970 00:00:01 GMT";
         }
     };
 
