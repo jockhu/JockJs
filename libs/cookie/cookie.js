@@ -57,6 +57,12 @@
             };
             J.get(p);
         },
+        rmFstCookie: function(name, domain, path){
+            D.cookie = decode(name) + "=" +
+                ( ( path ) ? ";path=" + path : "") +
+                ( ( domain ) ? ";domain=" + domain : "" ) +
+                ";expires=Thu, 01-Jan-1970 00:00:01 GMT";
+        },
         /**
          * 获取cookie值
          *
@@ -68,14 +74,12 @@
             if (validString(name)) {
                 m = new RegExp("(?:^|)" + decode(name) + "=([^;]*)(?:;|$)",'ig');
                 while((result = m.exec(D.cookie)) != null){
-                    (++i===1 && result) && (ret = result[1]||null);
-                    a.push(result[1]||null);
-//                    console.log('--',i, result,decode(name), ret)
+                    ++i;
+                    a.push(ret = result[1]||null);
                 }
-//                console.log('++',i, decode(name), ret)
-
 
                 if(i>1){
+                    cookie.rmFstCookie(name, J.site.info.baseDomain, D.location.pathname.replace(/([^\/]+)$/,''));
                     cookie.twoSend({
                         version:J.site.info.version,
                         __guid:J.createguid,
