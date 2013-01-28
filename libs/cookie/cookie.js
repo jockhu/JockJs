@@ -147,7 +147,7 @@
          * @return null
          */
         rmCookie: function(name, domain, path, secure){
-            if ( this.getCookie( name ) ) D.cookie = decode(name) + "=" +
+            if ( cookie.getCookie( name ) ) D.cookie = decode(name) + "=" +
                 ( ( path ) ? ";path=" + path : "") +
                 ( ( domain ) ? ";domain=" + domain : "" ) +
                 ";expires=Thu, 01-Jan-1970 00:00:01 GMT";
