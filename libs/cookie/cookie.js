@@ -50,8 +50,18 @@
 
     var cookie = {
         twoSend: function(data){
+            function getUrl(){
+                var debugUrl, location = D.location,
+                    host = location.host,isDev = /\.(dev\.|test)/.test(host), isAifang = /aifang\.com/.test(host);
+                if(!isDev){
+                    debugUrl = 'http://www.' + (isAifang ? 'aifang' : 'fang.anjuke') + '.com/ts.html';
+                }else{
+                    debugUrl = 'http://www.dev.aifang.com/ts.html';
+                }
+                return debugUrl;
+            }
             var p = {
-                url:J.debugUrl,
+                url:getUrl(),
                 data:data,
                 type:'jsonp'
             };
@@ -75,19 +85,15 @@
                 m = new RegExp("(?:^|)" + decode(name) + "=([^;]*)(?:;|$)",'ig');
                 while((result = m.exec(D.cookie)) != null){
                     ++i;
-                    a.push(ret = result[1]||null);
+                    a.push(ret = decode(result[1])||null);
                 }
-
                 if(i>1){
                     cookie.rmFstCookie(name, J.site.info.baseDomain, D.location.pathname.replace(/([^\/]+)$/,''));
                     cookie.twoSend({
+                        action:'twoCookie_____' + decode(name) + '_____' + a.join('*'),
                         version:J.site.info.version,
                         __guid:J.createguid,
-                        guid:J.guid,
-                        action:'twoCookie',
-                        oldCookie:D.cookie,
-                        cName:decode(name),
-                        cValue:a.join(';')
+                        guid:J.guid
                     });
                 }
 
@@ -148,7 +154,7 @@
          */
         rmCookie: function(name, domain, path, secure){
             if ( cookie.getCookie( name ) ) D.cookie = decode(name) + "=" +
-                ( ( path ) ? ";path=" + path : "") +
+                ";path=" + (validString(path) ? path : "/") +
                 ( ( domain ) ? ";domain=" + domain : "" ) +
                 ";expires=Thu, 01-Jan-1970 00:00:01 GMT";
         }
