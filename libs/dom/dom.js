@@ -31,6 +31,9 @@
             this.length = 1;
             return this
         }
+        if (id instanceof elem){
+            return id
+        }
         if (id = ( id && id.nodeType ) ? id : D.getElementById(id)) {
             this[0] = id;
             this.length = 1;
@@ -130,6 +133,15 @@
                     this.attr(k, key[k]);
                 }
             }
+            return this;
+        },
+
+        /**
+         * 移除属性
+         * @param key
+         */
+        removeAttr:function(key){
+            this.get().removeAttribute(key);
             return this;
         },
 
