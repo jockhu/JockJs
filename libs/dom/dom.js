@@ -100,7 +100,7 @@
 
     var fn = elem.prototype = {
         show:function () {
-            this.get().style.display = '';
+            this.get().style.display = 'block';
             return this
         },
 
