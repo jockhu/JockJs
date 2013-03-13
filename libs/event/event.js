@@ -44,7 +44,7 @@ KEY_INSERT:45,
             return event.which || event.keyCode;
         },
         g:function(element){
-            return J.isString(element) ? D.getElementById(element) : (element.length && element.get) ? element.get(0) : element;
+            return (!element) ? '' : J.isString(element) ? D.getElementById(element) : (element.length && element.get) ? element.get(0) : element;
         }
     });
 
