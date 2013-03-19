@@ -26,9 +26,11 @@
     }
 
     function elem(id) {
+        var selector = id;
         if (id === "body" && D.body) {
             this[0] = D.body;
             this.length = 1;
+            this.selector = selector;
             return this
         }
         if (id instanceof elem){
@@ -38,6 +40,7 @@
             this[0] = id;
             this.length = 1;
         }
+        this.selector = selector;
         return this;
     }
 
@@ -250,7 +253,9 @@
         },
 
         get:function (index) {
-            return this[index || 0]
+            var index = index || 0, elm = this[index];
+            if(!elm) throw('"'+this.selector+'" element does not exist.');
+            return elm;
         },
 
         width:function(){
@@ -467,6 +472,7 @@
      * @return []
      */
     function select(selector, element) {
+        this.selector = selector;
 
         // J.sizzle
         if (J.sizzle) return J.merge(this, J.sizzle(selector, element));
@@ -518,8 +524,12 @@
             return this;
         },
         eq:function (i) {
-            i = i || 0;
-            return g(this[ i === -1 ? this.length - 1 : i ]);
+            var i = i || 0, elm = this[ i === -1 ? this.length - 1 : i ];
+            if(!elm) throw('"'+this.selector+'" element does not exist.');
+            return g(elm);
+        },
+        get:function(i) {
+            return this.eq(i);
         },
         length:0,
         splice:[].splice
