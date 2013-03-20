@@ -130,7 +130,7 @@
             }
             key = Fix_ATTS[key] || key;
             if (J.isString(key))
-                if (U(value)) return element.getAttribute(key); else element.setAttribute(key, value);
+                if (U(value)) return element.getAttribute(key); else (value === null) ? this.removeAttr(key) : element.setAttribute(key, value);
             else {
                 for (var k in key) {
                     this.attr(k, key[k]);
