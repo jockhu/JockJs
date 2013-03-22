@@ -18,7 +18,8 @@
 (function (J, W, D) {
 
     function g(id) {
-        return new elem(id);
+        var domElm = new elem(id);
+        return domElm.length ? domElm : null;
     }
 
     function s(selector, element) {
@@ -36,6 +37,7 @@
         if (id instanceof elem){
             return id
         }
+
         if (id = ( id && id.nodeType ) ? id : D.getElementById(id)) {
             this[0] = id;
             this.length = 1;
@@ -254,7 +256,7 @@
 
         get:function (index) {
             var index = index || 0, elm = this[index];
-            if(!elm) throw('"'+this.selector+'" element does not exist.');
+            if(!elm) throw('selector "'+this.selector+'" element is not found.');
             return elm;
         },
 
