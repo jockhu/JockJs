@@ -186,6 +186,11 @@
               new RegExp("(^|\\s)" + className + "(\\s|$)").test(elementClassName)));
         },
 
+        /**
+         * 获取样式
+         * @param style
+         * @returns {*}
+         */
         getStyle: function(style) {
             var element = this.get();
             style = style == float ? cssFloat : style;
@@ -198,6 +203,11 @@
             return value == 'auto' ? null : value;
         },
 
+        /**
+         * 设置样式
+         * @param styles
+         * @returns {*}
+         */
         setStyle: function(styles) {
             var element = this.get(), elementStyle = element.style, match;
             if (J.isString(styles)) {
@@ -394,6 +404,13 @@
             var element = this.get();
             if (arguments.length == 0) return this.first();
             return J.isNumber(expression) ? new select('*', element).eq(expression) : new select(expression, element);
+        },
+
+        /**
+         * 提交表单
+         */
+        submit: function(){
+            this.get().submit();
         },
 
         eq:function (i) {
