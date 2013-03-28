@@ -286,7 +286,7 @@
                     try {
                         responseRet = (opts.type == 'json') ? (new Function("return (" + xhr.responseText + ")"))() : xhr.responseText
                     } catch (error) {
-                        return handler(xhr);
+                        return handler(xhr.responseText);
                     }
                     handler(responseRet);
                 }
