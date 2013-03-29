@@ -62,7 +62,7 @@
      *
      */
     function each(object, callback) {
-        var i = 0, length = object.length, isObj = length === U;
+        var i = 0, I, length = object.length, isObj = length === U;
         if (isObj) {
             for (I in object) {
                 if (callback.call(object[ I ], I, object[ I ]) === false) {
