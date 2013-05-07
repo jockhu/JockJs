@@ -79,7 +79,7 @@
         return object;
     }
 
-    function T( o ) {
+    function Tp( o ) {
         return o === null ? String( o ) : c2t[ Object.prototype.toString.call(o) ] || U;
     }
 
@@ -88,7 +88,7 @@
             var lowerName = name.toLowerCase();
             c2t[ "[object " + name + "]" ] = lowerName;
             IS['is'+name] = function(o){
-                return T(o) === lowerName
+                return Tp(o) === lowerName
             };
         });
         IS.isWindow = function( object ) {
@@ -454,7 +454,7 @@
         use:use,
         rules:rules,
         each:each,
-        type:T,
+        type:Tp,
         getTime:getTime,
         times:times,
         slice:slice
