@@ -49,30 +49,6 @@
     }
 
     var cookie = {
-        twoSend: function(data){
-            function getUrl(){
-                var debugUrl, location = D.location,
-                    host = location.host,isDev = /\.(dev\.|test)/.test(host), isAifang = /aifang\.com/.test(host);
-                if(!isDev){
-                    debugUrl = 'http://www.' + (isAifang ? 'aifang' : 'fang.anjuke') + '.com/ts.html';
-                }else{
-                    debugUrl = 'http://www.dev.aifang.com/ts.html';
-                }
-                return debugUrl;
-            }
-            var p = {
-                url:getUrl(),
-                data:data,
-                type:'jsonp'
-            };
-            J.get(p);
-        },
-        rmFstCookie: function(name, domain, path){
-            D.cookie = decode(name) + "=" +
-                ( ( path ) ? ";path=" + path : "") +
-                ( ( domain ) ? ";domain=" + domain : "" ) +
-                ";expires=Thu, 01-Jan-1970 00:00:01 GMT";
-        },
         /**
          * 获取cookie值
          *
@@ -80,50 +56,12 @@
          * @return {String} cookie值
          */
         getCookie: function (name) {
-            var ret = null, m, result,i= 0, a = [];
+            var ret = null, m, result;
             if (validString(name)) {
                 m = new RegExp("(?:^|)" + decode(name) + "=([^;]*)(?:;|$)",'ig');
                 while((result = m.exec(D.cookie)) != null){
-                    ++i;
-                    a.push(ret = decode(result[1])||null);
+                    ret = decode(result[1])||null;
                 }
-                if(i>1){
-                    cookie.rmFstCookie(name, J.site.info.baseDomain, D.location.pathname.replace(/([^\/]+)$/,''));
-                    cookie.twoSend({
-                        action:'twoCookie_____' + decode(name) + '_____' + a.join('*'),
-                        version:J.site.info.version,
-                        __guid:J.createguid,
-                        guid:J.guid
-                    });
-                }
-
-
-/*
-                m = (D.cookie).match(new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)"));
-                m = new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)",'g').exec(D.cookie);
-                m && console.log(m,m[1], m.length);
-
-
-                i=0;
-                m = new RegExp("(?:^|)" + decode(name) + "=([^;]*)(?:;|$)",'ig');
-                while((result = m.exec(D.cookie)) != null){
-                    console.log('result',result)
-                    if(i++==10) return;
-                }*/
-
-                /*if (result) {
-                    return result[2] || null;
-                }*/
-
-
-
-
-                //if(m.length >)
-                //console.log((D.cookie).match(new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)")).length);
-                /*if ((m = String(D.cookie).match(new RegExp('(?:^|)' + decode(name) + "=([^;]*)(?:;|$)")))) {
-                    ret = m[1] ? decode(m[1]) : '';
-                    console.log(ret)
-                }*/
             }
             return ret;
         },
