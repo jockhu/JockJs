@@ -420,7 +420,7 @@
         var m = this, args = slice.call(arguments, 1);
         sT(function() {
             return m.apply(m, args);
-        }, timeout * 1000);
+        }, timeout || 0);
     };
 
 
