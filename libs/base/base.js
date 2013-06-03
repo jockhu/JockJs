@@ -155,7 +155,7 @@
                 D[rL](cL, arguments.callee, 0), finishRready()
             }, 0);
             W[aL](ld, function () {
-                W[rL](ld, arguments.callee, 0), finishRready()
+                W[rL](ld, arguments.callee, 0), finishRready(1)
             }, 0);
         } else if (Dt) {
             Dt(sC, function () {
@@ -163,7 +163,7 @@
                     D[dT](sC, arguments.callee), finishRready()
             });
             W[aT](old, function () {
-                W[dT](old, arguments.callee), finishRready()
+                W[dT](old, arguments.callee), finishRready(1)
             });
 
             if (dE.doScroll && null == W['frameElement']) {
@@ -194,7 +194,8 @@
     /**
      * 完成文档结构，如果队列有任务就执行任务
      */
-    function finishRready() {
+    function finishRready(isLoad) {
+        isLoad && (times.PL = getTime());
         if (!isReady) {
             if (!D.body) {
                 return sT(finishRready, 1);
@@ -210,7 +211,6 @@
             }
             return 0
         }
-        times.PL = getTime();
     }
 
     /**
