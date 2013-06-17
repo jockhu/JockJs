@@ -235,8 +235,6 @@
             n.type = 'text/css';
             n.rel = 'stylesheet';
             n.href = url;
-            h.appendChild(n);
-            return;
         }
 
         n.onload = n[sC] = function () {
