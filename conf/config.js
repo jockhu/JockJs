@@ -61,6 +61,18 @@ exports.userRoot = 'libs';
 exports.userModules = [];
 
 /**
+ * Default component root path
+ * @const
+ */
+exports.componentRoot = 'libs';
+
+/**
+ * Default component modules
+ * @const
+ */
+exports.componentModules = [];
+
+/**
  * Default cache path
  * @const
  */
