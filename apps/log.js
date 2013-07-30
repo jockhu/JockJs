@@ -4,9 +4,7 @@
  */
 (function(){
     var conf = require("../conf/config"),
-    fs   = require("fs"),
-    Utils = require("./utils");
-    try{Utils.extend(conf, require('config'))}catch(e){}
+    fs   = require("fs");
 
     var logPath = conf.logPath,
 	    date    = new Date(),

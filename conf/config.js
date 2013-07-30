@@ -16,6 +16,11 @@
  */
 
 
+/**
+ * Default config path
+ * @const
+ */
+exports.configPath = '/Users/jock/config/jockjs/config.js';
 
 
 /**
