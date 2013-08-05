@@ -12,8 +12,8 @@ var conf = require("../conf/config"),
     Log = require("./log").Log,
     uglify = require("uglify-js"),
     Utils = require("./utils");
-    if(conf.configPath)
-        try{Utils.extend(conf, require(conf.configPath))}catch(e){}
+    if(conf.userConfigPath)
+        try{Utils.extend(conf, require(conf.userConfigPath))}catch(e){}
 
 /**
  * Resource(request, response)

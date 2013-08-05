@@ -10,42 +10,41 @@
  *
  * example
  *
- *         node service.js 8000 true  false    20120101
- *                        port debug compress version
+ *         node service.js
  *
  */
 
 
+
 /**
- * Default config path
+ * Default config path, rewrite app conf
  * @const
  */
-exports.configPath = '/Users/jock/config/jockjs/config.js';
-
+exports.userConfigPath = process.argv[2] || '';
 
 /**
  * Default port
  * @const
  */
-exports.port = process.argv[2] || 8000;
+exports.port = 8000;
 
 /**
  * Default debug
  * @const
  */
-exports.debug = (process.argv[3] != undefined) ? process.argv[3] == 'true' : false;
+exports.debug = true;
 
 /**
  * Default enable compression
  * @const
  */
-exports.enableCompress = (process.argv[4] != undefined) ? process.argv[4] == 'true' : true;
+exports.enableCompress = false;
 
 /**
  * Default version
  * @const
  */
-exports.version = process.argv[5];
+exports.version = '';
 
 /**
  * Default root path
@@ -57,7 +56,7 @@ exports.root = 'libs';
  * Default user root path
  * @const
  */
-exports.userRoot = 'libs';
+exports.userRoot = '';
 
 /**
  * Default user modules
@@ -69,7 +68,7 @@ exports.userModules = [];
  * Default component root path
  * @const
  */
-exports.componentRoot = 'libs';
+exports.componentRoot = '';
 
 /**
  * Default component modules
