@@ -12,7 +12,8 @@ var conf = require("../conf/config"),
     Log = require("./log").Log,
     uglify = require("uglify-js"),
     Utils = require("./utils");
-    try{Utils.extend(conf, require('config'))}catch(e){}
+    if(conf.userConfigPath)
+        try{Utils.extend(conf, require(conf.userConfigPath))}catch(e){}
 
 /**
  * Resource(request, response)
@@ -466,19 +467,19 @@ Resource.prototype.getHost = function() {
  *
  */
 Resource.prototype.getRealFilePath = function(file) {
-    return this.router.getLibsFilePath( this.isUserModule(file.split('\/')[0]) ) + '/' + file;
+    return this.router.getLibsFilePath( this.getRootByModule(file.split('\/')[0]) ) + '/' + file;
 }
 
 /**
  *
- * Resource.isUserModule(module)
+ * Resource.getRootByModule(module)
  *
  */
-Resource.prototype.isUserModule = function(module) {
-    if(!conf.userModules.length) return 0;
-    return this.inArray(module, conf.userModules) > -1
+Resource.prototype.getRootByModule = function(module) {
+    if(conf.userModules.length && this.inArray(module, conf.userModules) !== -1) return 'userRoot';
+    if(conf.componentModules.length && this.inArray(module, conf.componentModules) !== -1) return 'componentRoot';
+    return 'root'
 }
-
 
 /**
  *
