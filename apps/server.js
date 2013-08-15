@@ -35,7 +35,12 @@
                 });
             } else {
                 Log.log('No gzip')
-                res.send(content);
+                if(content.length > 10){
+                    res.send(content);
+                }else{
+                    Log.log('Error:Content is null.');
+                    res.err500();
+                }
             }
 
         }).listen(conf.port);
