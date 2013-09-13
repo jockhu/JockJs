@@ -35,7 +35,9 @@ J.on = J.event.on = function (element, type, handler, data, preventDefault, stop
 
     var E = J.event, a = E.CACHE, responder, isFire = type.indexOf(':') > -1, aD = 'addEventListener', aT = 'attachEvent', DA = E.DA, LO = E.LO;
 
-    if( (element = E.g(element)).length == 0 ) return false;
+    //if( (element = E.g(element)).length == 0 ) return false;
+
+    element = E.g(element);
 
     responder = E.fix(element, type, handler, data, preventDefault, stopPropagation);
 
