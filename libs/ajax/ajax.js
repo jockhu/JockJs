@@ -121,7 +121,10 @@
             }
             opts.callback && inputs.push("<input type='hidden' name='callback' value='" + opts.callback + "' />");
             form.innerHTML = inputs.join('');
-            form.action = opts.url;
+
+            //form.action = opts.url;
+            // DEBUG BEGIN
+            form.action = addSessionID(opts.url);
             form.method = 'post';
             form.target = guid;
             sojContainer.appendChild(form);
@@ -139,6 +142,13 @@
             form = null;
         }
 
+        function addSessionID(url) {
+            if(J.requestSessionId){
+                return url += (url.indexOf('?') > 0 ? '&' : '?') + '__REQU_SESSION_ID=' + J.requestSessionId;
+            }
+            return url;
+        }
+
         function request() {
             try {
                 var async = opts.async, headers = opts.headers, data = opts.data, aUrl;
@@ -151,7 +161,9 @@
                     aUrl = buildUrl();
                     data = null
                 } else {
-                    aUrl = opts.url;
+                    //aUrl = opts.url;
+                    aUrl = addSessionID(opts.url);
+
                     if (data && !J.isString(data)) (data = param(data));
                 }
 
@@ -171,6 +183,9 @@
                         xhr.setRequestHeader(key, headers[key]);
                     }
                 }
+
+                // DEBUG
+                J.requestSessionId && xhr.setRequestHeader('REQU_SESSION_ID', J.requestSessionId);
 
                 fire('Beforerequest');
 
@@ -195,12 +210,19 @@
 
         function buildUrl() {
             var data = opts.data, url = opts.url;
+            // DEBUG BEGIN
+            J.requestSessionId && (url = url.replace(/__REQU_SESSION_ID=[^&]+/,''));
+            // DEBUG END
             if (data && !J.isString(data)) (data = param(data));
             if (method == "GET") {
                 data && (url += fn() + data);
                 (opts.type == 'jsonp' && opts.callback) && (url += fn() + 'callback=' + opts.callback);
                 opts.cache || (url += fn() + 'J' + J.getTime())
             }
+
+            // DEBUG BEGIN
+            url = addSessionID(url);
+
             function fn() {
                 return url.indexOf('?') > 0 ? '&' : '?'
             }
