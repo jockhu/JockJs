@@ -112,7 +112,7 @@ KEY_INSERT:45,
                 a.splice(l, 1);
             }
         });
-    else
-        W.addEventListener(U, function () {}, false);
+    // else
+    //     W.addEventListener(U, function () {}, false);
 
 })(J, window, document);
