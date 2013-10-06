@@ -203,7 +203,7 @@
                     stateChangeHandler();
                 }
             } catch (ex) {
-                fire('Failure');
+                fire('Failure', ex);
             }
             return xhr;
         }
@@ -255,7 +255,7 @@
                     var stat = xhr.status;
                 } catch (ex) {
                     // 在请求时，如果网络中断，Firefox会无法取得status
-                    fire('Failure');
+                    fire('Failure', ex);
                     return;
                 }
                 if ((stat >= 200 && stat < 300) || stat == 304 || stat == 1223) {
@@ -297,20 +297,30 @@
          *
          * @ignore
          * @param {String} type 事件类型
+         * @param {EventHandler} eventHandler 事件句柄
          */
-        function fire(type) {
+        function fire(type, eventHandler) {
             type = 'on' + type;
             var handler = eventHandlers[type], responseRet;
             if (handler) {
                 if (type != 'onSuccess') {
-                    handler(xhr);
+                    handler(eventHandler||xhr);
                 } else {
                     try {
                         responseRet = (opts.type == 'json') ? (new Function("return (" + xhr.responseText + ")"))() : xhr.responseText
-                    } catch (error) {
-                        return handler(xhr.responseText);
+                    } catch (ex) {
+                        fire('Failure', ex);
+                        return;
+                    };
+                    try{
+                        handler(responseRet);
+                    }catch(ex){
+                        if(eventHandlers['onFailure']){
+                            fire('Failure', ex)
+                        }else{
+                            throw ex
+                        }
                     }
-                    handler(responseRet);
                 }
             }
         }
