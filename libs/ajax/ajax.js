@@ -310,7 +310,6 @@
                         responseRet = (opts.type == 'json') ? (new Function("return (" + xhr.responseText + ")"))() : xhr.responseText
                     } catch (ex) {
                         fire('Failure', ex);
-                        return;
                     };
                     try{
                         handler(responseRet);
