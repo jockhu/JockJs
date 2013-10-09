@@ -166,7 +166,13 @@
                 W[dT](old, arguments.callee), finishRready(1)
             });
 
-            if (dE.doScroll && null == W['frameElement']) {
+            var fixDenied = false;
+
+            try{
+                fixDenied = null == W.frameElement
+            }catch(e){}
+
+            if (dE.doScroll && fixDenied) {
                 (function () {
                     if (isReady)
                         return;
