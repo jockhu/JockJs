@@ -62,21 +62,23 @@
      *
      */
     function each(object, callback) {
-        var i = 0, I, length = object.length, isObj = length === U;
+        var i = 0, I, length = object.length, isObj = length === U, ret = true;
         if (isObj) {
             for (I in object) {
                 if (callback.call(object[ I ], I, object[ I ]) === false) {
+                    ret = false;
                     break;
                 }
             }
         } else {
             for (; i < length;) {
                 if (callback.call(object[ i ], i, object[ i++ ]) === false) {
+                    ret = false;
                     break;
                 }
             }
         }
-        return object;
+        return ret;
     }
 
     function Tp( o ) {
