@@ -192,11 +192,15 @@
          * @returns {*}
          */
         getStyle: function(style) {
-            var element = this.get();
+            var element = this.get(), css;
             style = style == float ? cssFloat : style;
             var value = element.style[style];
             if (!value || value == 'auto') {
-                var css = D.defaultView.getComputedStyle(element, null);
+                if(J.ua.ie){
+                    css = element.currentStyle; //use currentStyle to get real style for ie
+                }else{
+                    css = D.defaultView.getComputedStyle(element, null);
+                }
                 value = css ? css[style] : null;
             }
             if (style == opacity) return value ? parseFloat(value) : 1.0;
