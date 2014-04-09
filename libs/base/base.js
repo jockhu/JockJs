@@ -46,6 +46,7 @@
      * @type {Object}
      */
     var link = {
+        aL:aL,
         W:W,
         D:D,
         St:sT,
