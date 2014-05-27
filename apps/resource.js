@@ -254,6 +254,7 @@ Resource.prototype.getResource = function() {
     expires.setTime(expires.getTime() + (conf.maxAge * 10000));
     this.res.setHeader("Expires", expires.toUTCString());
     this.res.setHeader("Cache-Control", 'public, max-age=' + conf.maxAge);
+    this.res.setHeader("Access-Control-Allow-Origin", '*');
     return result;
 }
 
