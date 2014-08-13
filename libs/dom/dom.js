@@ -9,122 +9,49 @@
  *
  */
 
-/// require('lang.merge');
 /// require('string.trim');
 
 /**
  * @namespace J.dom
  */
+
+/**
+ * change log
+ *
+ * @version: 1.0.1 By Jock
+ * 2014.7.23
+ * J.g('id') 所有扩展的方法做了容错处理，哪怕ID不存在也不会有问题
+ * J.s('.abc') 扩展了所有单个元素的方法，解决了以前只可以通过 each 使用
+ *
+ *
+ *
+ */
+
+
 (function (J, W, D) {
 
-    function g(id) {
-        var domElm = new elem(id);
-        return domElm.length ? domElm : null;
-    }
-
-    function s(selector, element) {
-        return new select(selector, element)
-    }
-
-    function elem(id) {
-        var selector = id;
-        if (id === "body" && D.body) {
-            this[0] = D.body;
-            this.length = 1;
-            this.selector = selector;
-            return this
-        }
-        if (id instanceof elem){
-            return id
-        }
-
-        if (id = ( id && id.nodeType ) ? id : D.getElementById(id)) {
-            this[0] = id;
-            this.length = 1;
-        }
-        this.selector = selector;
-        return this;
-    }
-
-    var T = 'getElementsByTagName', C = 'getElementsByClassName', dom = g, float = 'float', cssFloat = 'cssFloat', opacity = 'opacity', U = J.isUndefined,
-
-    Fix_ATTS = (function () {
-        var result = {};
-        if (J.ua.ie < 8) {
-            result['for'] = 'htmlFor';
-            result['class'] = 'className';
-        } else {
-            result['htmlFor'] = 'for';
-            result['className'] = 'class';
-        }
-        return result;
-    })(),
-
-    valFix = (function () {
-        function input(element, value) {
-            switch (element.type.toLowerCase()) {
-                case 'checkbox':
-                case 'radio':
-                    return inputSelector(element, value);
-                default:
-                    return valueSelector(element, value);
-            }
-        }
-
-        function inputSelector(element, value) {
-            if (U(value))  return element.checked ? element.value : null;
-            else element.checked = !!value;
-        }
-
-        function valueSelector(element, value) {
-            if (U(value)) return element.value; else element.value = value;
-        }
-
-        function select(element, value) {
-            if (U(value))
-                return selectOne(element);
-        }
-
-        function selectOne(element) {
-            var index = element.selectedIndex;
-            return index >= 0 ? optionValue(element.options[index]) : null;
-        }
-
-        function optionValue(opt) {
-            return (!U(opt['value'])) ? opt.value : opt.text;
-        }
-
-        return {
-            input:input,
-            textarea:valueSelector,
-            select:select,
-            button:valueSelector
-        };
-    })();
-
-
-    var fn = elem.prototype = {
-        show:function () {
+    var fn = {
+        show: function () {
             this.get().style.display = '';
             return this
         },
 
-        hide:function () {
+        hide: function () {
             this.get().style.display = 'none';
             return this
         },
 
-        visible: function() {
+        visible: function () {
             return this.get().style.display != 'none';
         },
 
-        remove:function(){
+        remove: function () {
             var element = this.get();
             element.parentNode && element.parentNode.removeChild(element);
             return this
         },
 
-        attr:function (key, value) {
+        attr: function (key, value) {
             var element = this.get();
             if ('style' === key) {
                 if (U(value)) return element.style.cssText; else element.style.cssText = value;
@@ -145,7 +72,7 @@
          * 移除属性
          * @param key
          */
-        removeAttr:function(key){
+        removeAttr: function (key) {
             this.get().removeAttribute(key);
             return this;
         },
@@ -155,7 +82,7 @@
          * @param className
          * @return this
          */
-        addClass:function (className) {
+        addClass: function (className) {
             var element = this.get();
             if (!this.hasClass(className))
                 element.className += (element.className ? ' ' : '') + className;
@@ -167,7 +94,7 @@
          * @param className
          * @return this
          */
-        removeClass:function (className) {
+        removeClass: function (className) {
             var element = this.get();
             element.className = element.className.replace(
                 new RegExp("(^|\\s+)" + className + "(\\s+|$)"), ' ').trim();
@@ -179,11 +106,11 @@
          * @param className
          * @return {Boolean}
          */
-        hasClass:function (className) {
+        hasClass: function (className) {
             var element = this.get();
             var elementClassName = element.className;
             return (elementClassName.length > 0 && (elementClassName == className ||
-              new RegExp("(^|\\s)" + className + "(\\s|$)").test(elementClassName)));
+                new RegExp("(^|\\s)" + className + "(\\s|$)").test(elementClassName)));
         },
 
         /**
@@ -191,17 +118,17 @@
          * @param style
          * @returns {*}
          */
-        getStyle: function(style) {
+        getStyle: function (style) {
             var element = this.get(), css;
             style = style == float ? cssFloat : style;
             var value = element.style[style];
             if (!value || value == 'auto') {
-                if(J.ua.ie){
+                if (J.ua.ie) {
                     css = element.currentStyle; //use currentStyle to get real style for ie
-                }else{
+                } else {
                     css = D.defaultView.getComputedStyle(element, null);
                 }
-               value = css ? css[style] : null;
+                value = css ? css[style] : null;
             }
             if (style == opacity) return value ? parseFloat(value) : 1.0;
             return value == 'auto' ? null : value;
@@ -209,11 +136,12 @@
 
         /**
          * 设置样式
-         * @param styles
+         * @param styles "color:#ccc;background:#fff" | {color:"#ccc",background:"#fff"}
+         *
          * @returns {*}
          */
-        setStyle: function(styles) {
-            var element = this.get(), elementStyle = element.style, match;
+        setStyle: function (styles) {
+            var element = this.get(), elementStyle = element.style;
             if (J.isString(styles)) {
                 element.style.cssText += ';' + styles;
                 styles.indexOf(opacity) > 0 && this.setOpacity(styles.match(/opacity:\s*(\d?\.?\d*)/)[1]);
@@ -221,36 +149,36 @@
             for (var property in styles)
                 if (property == opacity) this.setOpacity(styles[property]);
                 else
-                elementStyle[(property == float || property == cssFloat) ?
-                (elementStyle.styleFloat ? 'styleFloat' : cssFloat) :
-                property] = styles[property];
+                    elementStyle[(property == float || property == cssFloat) ?
+                        (elementStyle.styleFloat ? 'styleFloat' : cssFloat) :
+                        property] = styles[property];
 
             return this;
         },
 
-        getOpacity: function() {
+        getOpacity: function () {
             return this.getStyle(opacity);
         },
 
-        setOpacity: function(value) {
+        setOpacity: function (value) {
             this.get().style.opacity = (value == 1 || value === '') ? '' : (value < 0.00001) ? 0 : value;
             return this;
         },
 
-        append:function(element){
+        append: function (element) {
             this.get().appendChild(element.nodeType === 1 ? element : element.get());
             return this;
         },
 
-        appendTo:function(element){
-            getRealElement(element).append(this.get());
+        appendTo: function (element) {
+            g(element).append(this.get());
             return this;
         },
 
-        html:function(html){
+        html: function (html) {
             var self = this.get();
-            if(!J.isUndefined(html)){
-                if(html.nodeType === 1)
+            if (!J.isUndefined(html)) {
+                if (html.nodeType === 1)
                     return this.append(html)
                 self.innerHTML = html;
                 return this;
@@ -258,41 +186,38 @@
             return self.innerHTML;
         },
 
-        val:function(value){
+        val: function (value) {
             var element = this.get(), V = valFix[element.tagName.toLowerCase() || element.type];
-            V = V ? V (element, value) : null;
+            V = V ? V(element, value) : null;
             return (U(value)) ? V : this;
         },
 
-        s:function (selector) {
-            return new select(selector, (this[0].nodeType === 1) ? this[0] : D);
-        },
+        s: s,
 
-        get:function (index) {
+        get: function (index) {
             var index = index || 0, elm = this[index];
-            if(!elm) throw('selector "'+this.selector+'" element is not found.');
             return elm;
         },
 
-        width:function(){
+        width: function () {
             return getWH(this).width
         },
 
-        height:function(){
+        height: function () {
             return getWH(this).height
         },
 
-        offset:function() {
+        offset: function () {
             var target = this.get();
-            if(target && J.isUndefined(target.offsetLeft)) {
+            if (target && J.isUndefined(target.offsetLeft)) {
                 target = target.parentNode;
             }
-            var pageCoord = (function(element){
+            var pageCoord = (function (element) {
                 var coord = {
-                    x : 0,
-                    y : 0
+                    x: 0,
+                    y: 0
                 };
-                while(element) {
+                while (element) {
                     coord.x += element.offsetLeft;
                     coord.y += element.offsetTop;
                     element = element.offsetParent;
@@ -300,8 +225,8 @@
                 return coord;
             })(target);
             return {
-                x : pageCoord.x,
-                y : pageCoord.y
+                x: pageCoord.x,
+                y: pageCoord.y
             };
         },
 
@@ -309,9 +234,9 @@
          * 将目标元素添加到基准元素之后
          * @param element 插入的元素
          */
-        insertAfter:function (element) {
+        insertAfter: function (element) {
             var self = this.get(), parent = self.parentNode;
-            if(parent){
+            if (parent) {
                 parent.insertBefore(element.nodeType === 1 ? element : element.get(), self.nextSibling);
             }
             return this;
@@ -321,9 +246,9 @@
          * 将目标元素添加到基准元素之前
          * @param element 插入的元素
          */
-        insertBefore:function (element) {
+        insertBefore: function (element) {
             var self = this.get(), parent = self.parentNode;
-            if(parent){
+            if (parent) {
                 parent.insertBefore(element.nodeType === 1 ? element : element.get(), self);
             }
             return this;
@@ -333,13 +258,13 @@
          * 将目标元素添加到基准元素第一个子节点之前
          * @param element 插入的元素
          */
-        insertFirst:function (element) {
+        insertFirst: function (element) {
             var first = this.first();
             first ? first.insertBefore(element) : this.append(element);
             return this;
         },
 
-        insertFirstTo:function (element) {
+        insertFirstTo: function (element) {
             getRealElement(element).insertFirst(this.get());
             return this;
         },
@@ -348,36 +273,36 @@
          * 将目标元素添加到基准元素最后一个子节点之后
          * @param element 插入的元素
          */
-        insertLast:function (element) {
+        insertLast: function (element) {
             return this.append(element)
         },
 
         /**
          * 获取目标元素的第一个元素节点
          */
-        first:function () {
-            return matchNode(this.get(), 'nextSibling', 'firstChild');
+        first: function () {
+            return matchNode(this, 'nextSibling', 'firstChild');
         },
 
         /**
          * 获取目标元素的最后一个元素节点
          */
-        last:function () {
-            return matchNode(this.get(), 'previousSibling', 'lastChild');
+        last: function () {
+            return matchNode(this, 'previousSibling', 'lastChild');
         },
 
         /**
          * 获取目标元素的下一个兄弟元素节点
          */
-        next:function () {
-            return matchNode(this.get(), 'nextSibling', 'nextSibling');
+        next: function () {
+            return matchNode(this, 'nextSibling', 'nextSibling');
         },
 
         /**
          * 获取目标元素的上一个兄弟元素节点
          */
-        prev:function () {
-            return matchNode(this.get(), 'previousSibling', 'previousSibling');
+        prev: function () {
+            return matchNode(this, 'previousSibling', 'previousSibling');
         },
 
         /**
@@ -392,11 +317,11 @@
             isNumber || (R = expression.match(/^(\.)?(\w+)$/));
             while (element = element['parentNode']) {
                 if (element.nodeType == 1)
-                    if(isNumber && i == expression) return g(element);
-                    else if(R && ((R[1] && R[2] == element.className) || R[2].toUpperCase() == element.tagName)) return g(element);
+                    if (isNumber && i == expression) return g(element);
+                    else if (R && ((R[1] && R[2] == element.className) || R[2].toUpperCase() == element.tagName)) return g(element);
                 i++;
             }
-            return null;
+            return fnExtNull(this);
         },
 
         /**
@@ -406,67 +331,184 @@
          */
         down: function (expression) {
             var element = this.get();
-            if (arguments.length == 0) return this.first();
-            return J.isNumber(expression) ? new select('*', element).eq(expression) : new select(expression, element);
+            if (arguments.length === 0 || expression === 0) return this.first();
+            return J.isNumber(expression) ? s('*', element).eq(expression) : s(expression, element);
         },
 
         /**
          * 提交表单
          */
-        submit: function(){
+        submit: function () {
             this.get().submit();
         },
 
-        eq:function (i) {
+        eq: function (i) {
             i = i || 0;
-            return g(this[ i === -1 ? this.length - 1 : i ]);
+            var item = this[ i === -1 ? this.length - 1 : i ];
+            return item ? g(item) : fnExtNull(this);
         },
 
-        empty:function(){
+        empty: function () {
             return this.html('');
         },
 
-        length:0,
-        splice:[].splice
+        length: 0,
+        splice: [].splice
     };
 
-    J.mix(dom,{
-        dom:dom,
-        create:create,
-        fn:fn,
-        s:s,
-        g:g
+    function g(id) {
+        var domElm = new elem(id);
+        !domElm.length && fnExtNull(domElm);
+        return domElm
+    }
+
+    function s(selector, element) {
+        var domElms = new select(selector, element);
+        return (domElms.length ? fnExt : fnExtNull)(domElms);
+    }
+
+    function fnExtNull(domElm){
+        for(var f in fn){
+            (f !== 'length') && (domElm[f] = function () {
+                return domElm;
+            });
+        }
+        return domElm
+    }
+
+    function fnExt(domElms){
+        for(var f in fn){
+            (function(f){
+                (f !== 'length' && f !== 'get') && (domElms[f] = function () {
+                    var i = 0, length = domElms.length;
+                    for (; i < length;) {
+                        g( domElms[i] )[f].apply( domElms[i++], arguments);
+                    }
+                    return domElms;
+                })
+            })(f);
+        }
+        return domElms
+    }
+
+    function elem(id) {
+        var selector = id;
+        if (id === "body" && D.body) {
+            this[0] = D.body;
+            this.length = 1;
+            this.selector = selector;
+            return this
+        }
+
+        if (id instanceof elem) {
+            return id
+        }
+
+        if (id = ( id && id.nodeType ) ? id : D.getElementById(id)) {
+            this[0] = id;
+            this.length = 1;
+        }
+        this.selector = selector;
+        return this;
+    }
+
+    var T = 'getElementsByTagName', C = 'getElementsByClassName', dom = g, float = 'float', cssFloat = 'cssFloat', opacity = 'opacity', U = J.isUndefined,
+
+        Fix_ATTS = (function () {
+            var result = {};
+            if (J.ua.ie < 8) {
+                result['for'] = 'htmlFor';
+                result['class'] = 'className';
+            } else {
+                result['htmlFor'] = 'for';
+                result['className'] = 'class';
+            }
+            return result;
+        })(),
+
+        valFix = (function () {
+            function input(element, value) {
+                switch (element.type.toLowerCase()) {
+                    case 'checkbox':
+                    case 'radio':
+                        return inputSelector(element, value);
+                    default:
+                        return valueSelector(element, value);
+                }
+            }
+
+            function inputSelector(element, value) {
+                if (U(value))  return element.checked ? element.value : null;
+                else element.checked = !!value;
+            }
+
+            function valueSelector(element, value) {
+                if (U(value)) return element.value; else element.value = value;
+            }
+
+            function select(element, value) {
+                if (U(value))
+                    return selectOne(element);
+            }
+
+            function selectOne(element) {
+                var index = element.selectedIndex;
+                return index >= 0 ? optionValue(element.options[index]) : null;
+            }
+
+            function optionValue(opt) {
+                return (!U(opt['value'])) ? opt.value : opt.text;
+            }
+
+            return {
+                input: input,
+                textarea: valueSelector,
+                select: select,
+                button: valueSelector
+            };
+        })();
+
+
+    elem.prototype = fn;
+
+    J.mix(dom, {
+        dom: dom,
+        create: create,
+        fn: fn,
+        s: s,
+        g: g
     });
 
-    function getRealElement(element){
+    function getRealElement(element) {
+        J.log(element);
         return J.isString(element) ? dom(element) : element
     }
 
     function matchNode(element, direction, start) {
-        for (var node = element[start]; node; node = node[direction]) {
+        for (var node = element.get()[start]; node; node = node[direction]) {
             if (node.nodeType == 1) {
-                return dom(node);
+                return g(node);
             }
         }
-        return null;
+        return fnExtNull(element);
     }
 
     function getWH(element) {
         var el = element.get();
 
-        if(element.visible()){
-            return { width:el.offsetWidth, height:el.offsetHeight }
+        if (element.visible()) {
+            return { width: el.offsetWidth, height: el.offsetHeight }
         }
 
         var sty = el.style, stys, wh, ostys = {
-            visibility:sty.visibility,
-            position:sty.position,
-            display:sty.display
+            visibility: sty.visibility,
+            position: sty.position,
+            display: sty.display
         };
 
         stys = {
-            visibility:'hidden',
-            display:'block'
+            visibility: 'hidden',
+            display: 'block'
         };
         if (ostys.position !== 'fixed')
             stys.position = 'absolute';
@@ -474,8 +516,8 @@
         element.setStyle(stys);
 
         wh = {
-            width:el.offsetWidth,
-            height:el.offsetHeight
+            width: el.offsetWidth,
+            height: el.offsetHeight
         };
 
         element.setStyle(ostys);
@@ -483,7 +525,7 @@
         return wh;
     }
 
-    function create(tagName, attributes){
+    function create(tagName, attributes) {
         var el = D.createElement(tagName), jEl = dom(el);
         return (U(attributes)) ? jEl : jEl.attr(attributes);
     }
@@ -496,19 +538,19 @@
      */
     function select(selector, element) {
         this.selector = selector;
-
         // J.sizzle
-        if (J.sizzle) return J.merge(this, J.sizzle(selector, element));
+        if (J.sizzle) return merge(this, J.sizzle(selector, element));
 
         var match = selector ? selector.match(/^(\.)?(\w+)(\s(\w+))?/) : null, result = [], len, i, elements, node, tagName;
         element = element || D;
+
         // div       -> [  "div"  ,   undefined  ,   "div"  ,   undefined  ,   undefined  ]
         // .ttt      -> [  ".ttt"  ,   "."  ,   "ttt"  ,   undefined  ,   undefined  ]
         // .ttt span -> [  ".ttt span"  ,   "."  ,   "ttt"  ,   " span"  ,   "span"  ]
         if (match && match[1]) {
             // 初始化tagName参数
             tagName = match[4] ? match[4].toUpperCase() : '';
-            // 查询元素
+            // 查询元素, 如果支持getElementsByClassName
             if (element[C]) {
                 elements = element[C](match[2]);
                 len = elements.length;
@@ -532,37 +574,46 @@
             result = element[T](selector)
         }
 
-        return J.merge(this, result)
+        return merge(this, result)
 
     }
 
+
+    function merge(first, second){
+        var i = first.length, l, j = 0;
+        for ( l = second.length; j < l; j++ ) {
+            first[ i++ ] = g(second[ j ]);
+        }
+        first.length = i;
+    }
+
+
     select.prototype = {
-        each:function (callback) {
+        each: function (callback) {
             var i = 0, length = this.length;
             for (; i < length;) {
-                if (callback.call(this[ i ], i, g(this[ i++ ])) === false) {
+                if (callback.call(this[ i ], i, this[ i++ ]) === false) {
                     break;
                 }
             }
             return this;
+        },/*
+        eq: function (i) {
+            var i = i || 0;
+            return this[ i === -1 ? this.length - 1 : i ];
         },
-        eq:function (i) {
-            var i = i || 0, elm = this[ i === -1 ? this.length - 1 : i ];
-            if(!elm) throw('"'+this.selector+'" element does not exist.');
-            return g(elm);
-        },
-        get:function(i) {
+        get: function (i) {
             return this.eq(i);
-        },
-        length:0,
-        splice:[].splice
+        },*/
+        length: 0,
+        splice: [].splice
     };
 
     J.mix(J, {
-        dom:dom,
-        create:create,
-        s:s,
-        g:g
+        dom: dom,
+        create: create,
+        s: s,
+        g: g
     });
 
 })(J, window, document);

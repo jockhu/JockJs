@@ -21,6 +21,19 @@
  * 构造J对象
  *
  */
+
+/**
+ * change log
+ *
+ * @version: 1.0.1  By Jock
+ * 2014.7.23
+ * 增加 J.log 方法
+ * 可以在各种版本下使用，高版本用console.log 低版本用 alert
+ *
+ *
+ *
+ */
+
 (function (W) {
     var BaseStart = +new Date(), PageStart = W.PAGESTART || BaseStart, hs = 'hasOwnProperty', mix = function (l, r, w) {
             if(w){
@@ -86,6 +99,9 @@
         return o === null ? String( o ) : c2t[ Object.prototype.toString.call(o) ] || U;
     }
 
+    /**
+     * 扩展 IsString 、IsFunction .... 方法
+     */
     (function(){
         each("Boolean Number String Function Array Date RegExp Object".split(" "), function(i, name) {
             var lowerName = name.toLowerCase();
@@ -244,8 +260,8 @@
             n.type = 'text/css';
             n.rel = 'stylesheet';
             n.href = url;
-	    h.appendChild(n);
-	    return;
+            h.appendChild(n);
+            return;
         }
 
         n.onload = n[sC] = function () {
@@ -452,9 +468,66 @@
         return +new Date()
     }
 
+    /**
+     * 打印调试日志
+     */
+    function log(){
+        var args = slice.call(arguments), cl = console;
+
+        /**
+         * 获取字符串拼接的前缀 eq abc: 123
+         *
+         * @param i 对象的键值
+         * @param b 为了格式好看，会传入一定数量的空格
+         * @returns {string} 拼接好的字符串
+         */
+        function getPrefix(i, b){
+            return (b||'') + (IS.isString(i) ? i + ': ' : '');
+        }
+
+        /**
+         * 将对象转成字符串
+         *
+         * @param o 对象
+         * @param b 为了格式好看，会传入一定数量的空格
+         * @returns {string} 拼接好的字符串
+         */
+        function getObjectString(o, b){
+            var ar = [];
+            b = b || '';
+            each(o, function(i, v){
+                if ( IS.isObject(v) ){
+                    ar.push( getPrefix( IS.isNumber(i) ? 'Object' : i, b) + '{\n'+getObjectString(v, b + '    ') + '\n' + b + '}' )
+                } else if ( IS.isFunction(v) ) {
+                    ar.push( getPrefix(i, b) + getFunctionString(v) )
+                } else {
+                    ar.push( getPrefix(i, b) + v )
+                }
+            });
+            return ar.join('\n');
+        }
+
+        /**
+         * 将函数转成字符串
+         *
+         * @param o 函数
+         * @returns {string} 字符串
+         */
+        function getFunctionString(o){
+            return (o = o.toString().match(/^(.*)[\S\s]*\{/)) ? o[1] : '';
+        }
+
+        if (cl && cl.log) {
+            cl.log.apply(cl, args);
+        }else{
+            alert( getObjectString(args) )
+        }
+
+    }
+
 
     /**
-     * 构造ready，load，use方法
+     * 公开的方法映射
      */
     _.base = mix(base, {
         ready:ready,
@@ -466,7 +539,8 @@
         type:Tp,
         getTime:getTime,
         times:times,
-        slice:slice
+        slice:slice,
+        log:log
     });
 
     /**
@@ -476,7 +550,7 @@
     _.data = {};
 
     /**
-     * 提升 base 子集
+     * 提升对象子集
      */
     mix(_, base);
     mix(_, IS);
