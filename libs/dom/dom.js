@@ -480,7 +480,6 @@
     });
 
     function getRealElement(element) {
-        J.log(element);
         return J.isString(element) ? dom(element) : element
     }
 
