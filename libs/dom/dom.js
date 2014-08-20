@@ -30,7 +30,7 @@
 
 (function (J, W, D) {
 
-    var fn = {
+    var undef = J.undef, fn = {
         show: function () {
             this.get().style.display = '';
             return this
@@ -53,6 +53,8 @@
 
         attr: function (key, value) {
             var element = this.get();
+            if(!element) return arguments.length <= 1 ? undef : this;
+
             if ('style' === key) {
                 if (U(value)) return element.style.cssText; else element.style.cssText = value;
                 return this;
@@ -175,24 +177,31 @@
             return this;
         },
 
-        html: function (html) {
-            var self = this.get();
-            if (!J.isUndefined(html)) {
-                if (html.nodeType === 1)
-                    return this.append(html)
-                self.innerHTML = html;
+        html: function (value) {
+            var element = this.get(), argumentsLength = arguments.length;
+            if(!element) return argumentsLength === 0 ? undef : this;
+
+            if (argumentsLength > 0) {
+                if (value && value.nodeType === 1)
+                    return this.append(value)
+                element.innerHTML = value;
                 return this;
             }
-            return self.innerHTML;
+            return element.innerHTML;
         },
 
         val: function (value) {
-            var element = this.get(), V = valFix[element.tagName.toLowerCase() || element.type];
-            V = V ? V(element, value) : null;
-            return (U(value)) ? V : this;
+            var element = this.get(), argumentsLength = arguments.length, V;
+            if(!element) return argumentsLength === 0 ? undef : this;
+
+            V = valFix[element.tagName.toLowerCase() || element.type];
+            V = V ? V(element, value) : undef;
+            return (argumentsLength === 0) ? V : this;
         },
 
-        s: s,
+        s: function(selector){
+            return s(selector, this.get())
+        },
 
         get: function (index) {
             var index = index || 0, elm = this[index];
@@ -342,19 +351,33 @@
             this.get().submit();
         },
 
-        eq: function (i) {
-            i = i || 0;
-            var item = this[ i === -1 ? this.length - 1 : i ];
-            return item ? g(item) : fnExtNull(this);
-        },
+        eq: eq,
 
         empty: function () {
             return this.html('');
         },
 
+        each: each,
+
         length: 0,
         splice: [].splice
     };
+
+    function eq(i) {
+        i = i || 0;
+        var item = this[ i === -1 ? this.length - 1 : i ];
+        return item ? g(item) : fnExtNull();
+    }
+
+    function each(callback) {
+        var i = 0, length = this.length;
+        for (; i < length;) {
+            if (callback.call( g( this[ i ] ), i, g( this[ i++ ]) ) === false) {
+                break;
+            }
+        }
+        return this;
+    }
 
     function g(id) {
         var domElm = new elem(id);
@@ -367,22 +390,33 @@
         return (domElms.length ? fnExt : fnExtNull)(domElms);
     }
 
+    /**
+     * 空方法重写
+     * @param domElm
+     * @return {*}
+     */
     function fnExtNull(domElm){
+        domElm = domElm || g();
         for(var f in fn){
-            (f !== 'length') && (domElm[f] = function () {
+            (f !== 'length' && f !== 'get' && f !== 'val' && f !== 'html' && f !== 'attr') && (domElm[f] = function () {
                 return domElm;
             });
         }
         return domElm
     }
 
+    /**
+     * 空方法重写
+     * @param domElms
+     * @return {*}
+     */
     function fnExt(domElms){
         for(var f in fn){
             (function(f){
-                (f !== 'length' && f !== 'get') && (domElms[f] = function () {
+                (f !== 'length' && f !== 'get' && f !== 'eq' && f !== 's') && (domElms[f] = function () {
                     var i = 0, length = domElms.length;
                     for (; i < length;) {
-                        g( domElms[i] )[f].apply( domElms[i++], arguments);
+                        g( domElms[i] )[f].apply(domElms[i++], arguments);
                     }
                     return domElms;
                 })
@@ -577,6 +611,25 @@
 
     }
 
+    select.prototype = {
+        /*
+         在新的版本中已经被重写
+         each: each,
+         get: function (i) {
+         return this.eq(i);
+         },
+         eq: function (i) {
+         var i = i || 0;
+         return this[ i === -1 ? this.length - 1 : i ];
+         },*/
+        s: function(selector){
+            return s(selector, this.eq().get())
+        },
+        eq: eq,
+        length: 0,
+        splice: [].splice
+    };
+
 
     function merge(first, second){
         var i = first.length, l, j = 0;
@@ -585,28 +638,6 @@
         }
         first.length = i;
     }
-
-
-    select.prototype = {
-        each: function (callback) {
-            var i = 0, length = this.length;
-            for (; i < length;) {
-                if (callback.call(this[ i ], i, this[ i++ ]) === false) {
-                    break;
-                }
-            }
-            return this;
-        },/*
-        eq: function (i) {
-            var i = i || 0;
-            return this[ i === -1 ? this.length - 1 : i ];
-        },
-        get: function (i) {
-            return this.eq(i);
-        },*/
-        length: 0,
-        splice: [].splice
-    };
 
     J.mix(J, {
         dom: dom,
