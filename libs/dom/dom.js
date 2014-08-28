@@ -147,9 +147,9 @@
         setStyle: function (style, value) {
             var element = this.get(), elementStyle = element.style, argumentsLength = arguments.length;
             if( argumentsLength === 2 ){
-                element.style.cssText += ';' + style + ':' + value;
+                elementStyle.cssText += ';' + style + ':' + value;
             }else if (J.isString(style)) {
-                element.style.cssText += ';' + style;
+                elementStyle.cssText += ';' + style;
                 style.indexOf(opacity) > 0 && this.setOpacity(style.match(/opacity:\s*(\d?\.?\d*)/)[1]);
             }
             for (var property in style)
