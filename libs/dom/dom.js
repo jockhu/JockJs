@@ -23,6 +23,8 @@
  * J.g('id') 所有扩展的方法做了容错处理，哪怕ID不存在也不会有问题
  * J.s('.abc') 扩展了所有单个元素的方法，解决了以前只可以通过 each 使用
  *
+ * 2014.08.28
+ * setStyle 增加2个参数的用法支持， .setStyle(color,red)
  *
  *
  */
@@ -138,22 +140,24 @@
 
         /**
          * 设置样式
-         * @param styles "color:#ccc;background:#fff" | {color:"#ccc",background:"#fff"}
-         *
-         * @returns {*}
+         * @param style "color:#ccc; background:#fff" | {color:"#ccc",background:"#fff"} | color
+         * @param value "red"
+         * @returns {dom}
          */
-        setStyle: function (styles) {
-            var element = this.get(), elementStyle = element.style;
-            if (J.isString(styles)) {
-                element.style.cssText += ';' + styles;
-                styles.indexOf(opacity) > 0 && this.setOpacity(styles.match(/opacity:\s*(\d?\.?\d*)/)[1]);
+        setStyle: function (style, value) {
+            var element = this.get(), elementStyle = element.style, argumentsLength = arguments.length;
+            if( argumentsLength === 2 ){
+                element.style.cssText += ';' + style + ':' + value;
+            }else if (J.isString(style)) {
+                element.style.cssText += ';' + style;
+                style.indexOf(opacity) > 0 && this.setOpacity(style.match(/opacity:\s*(\d?\.?\d*)/)[1]);
             }
-            for (var property in styles)
-                if (property == opacity) this.setOpacity(styles[property]);
+            for (var property in style)
+                if (property == opacity) this.setOpacity(style[property]);
                 else
                     elementStyle[(property == float || property == cssFloat) ?
                         (elementStyle.styleFloat ? 'styleFloat' : cssFloat) :
-                        property] = styles[property];
+                        property] = style[property];
 
             return this;
         },
