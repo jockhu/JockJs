@@ -374,7 +374,6 @@
     }
 
     function each(callback) {
-        debugger
         var i = 0, length = this.length;
         for (; i < length;) {
             if (callback.call( g( this[ i ] ), i, g( this[ i++ ]) ) === false) {
