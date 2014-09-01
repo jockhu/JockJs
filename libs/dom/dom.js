@@ -417,7 +417,7 @@
     function fnExt(domElms){
         for(var f in fn){
             (function(f){
-                (f !== 'length' && f !== 'get' && f !== 'eq' && f !== 's') && (domElms[f] = function () {
+                (f !== 'length' && f !== 'get' && f !== 'eq' && f !== 's' && f !== 'each') && (domElms[f] = function () {
                     var i = 0, length = domElms.length;
                     for (; i < length;) {
                         g( domElms[i] )[f].apply(domElms[i++], arguments);
@@ -626,6 +626,7 @@
          var i = i || 0;
          return this[ i === -1 ? this.length - 1 : i ];
          },*/
+        each: each,
         s: function(selector){
             return s(selector, this.eq().get())
         },
