@@ -10,10 +10,16 @@ var conf = require("../conf/config"),
     Fs = require("fs"),
     Path = require("path"),
     Log = require("./log").Log,
-    uglify = require("uglify-js"),
-    Utils = require("./utils");
+    Utils = require("./utils"), uglify;
     if(conf.userConfigPath)
-        try{Utils.extend(conf, require(conf.userConfigPath))}catch(e){}
+        try{Utils.extend(conf, require(conf.userConfigPath))}catch(e){
+            Log.error('User config rewrite error, ' + e.toString());
+        }
+    try{
+        uglify = require(conf.nodeModulesPath + "UglifyJS/uglify-js")
+    }catch(e){
+        Log.error('Uglify Js is not defined, ' + e.toString());
+    }
 
 /**
  * Resource(request, response)
@@ -137,8 +143,7 @@ Resource.prototype.getHashCode = function(a) {
  *
  */
 Resource.prototype.compress = function(buf) {
-
-    if(this.enableCompress){
+    if(this.enableCompress && uglify){
         Log.log('Compress enabled.');
         var final_code = '';
         try{
@@ -254,7 +259,7 @@ Resource.prototype.getResource = function() {
     expires.setTime(expires.getTime() + (conf.maxAge * 10000));
     this.res.setHeader("Expires", expires.toUTCString());
     this.res.setHeader("Cache-Control", 'public, max-age=' + conf.maxAge);
-    this.res.setHeader("Access-Control-Allow-Origin", '*');
+    this.res.setHeader("Access-Control-Allow-Origin", conf.crossOrigin);
     return result;
 }
 
@@ -322,18 +327,19 @@ Resource.prototype.loadFiles = function(module) {
  *
  */
 Resource.prototype.readFiles = function(path, module) {
-    var files = [], moduleJs = module+'.js', list = [], len;
+    var files = [], moduleJs = module+'.js', list = [], len, file;
     Log.log('readFiles -> path',path)
     try{
         files = Fs.readdirSync(path);
     }catch(e){
         Log.error('Call readFiles: readdirSync Error, Path: ' + path +' ' + e.toString() + this.referer)
     }
-
     len = files.length;
 
     while(len--){
-        if(files[len] === moduleJs || /^\./.test(files[len])) files.splice(len, 1);
+        file = files[len];
+        // /^\.|^\w+$/.test(file) 移除以.开头的隐藏文件，移除没有.js扩展名的文件，主要是排除test目录
+        if(file === moduleJs || /^\.|^\w+$/.test(file)) files.splice(len, 1);
     }
 
     files.sort();
@@ -364,6 +370,7 @@ Resource.prototype.loadFile = function(file) {
 	    if('base.base' === module){
 		    fileContent = fileContent.replace('__JHOST__', ( conf.jsHost || this.getHost() ) + (conf.jsPath ? conf.jsPath + '/' : '') ).replace('__CHOST__', conf.cssHost + (conf.cssPath ? conf.cssPath + '/' : '') ).replace('__VERSION__', this.getReleaseVersion())
 	    }
+        fileContent = fileContent.replace('__PHOST__', conf.pageHost );
         Log.log('load file:',file);
     }catch(e){
         Log.error('Call loadFiles: readFileSync Error, File: ' + file +' ' + e.toString() + this.referer)

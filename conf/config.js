@@ -95,6 +95,12 @@ exports.logPath = 'log';
 exports.jsHost = '';
 
 /**
+ * Default pages host
+ * @const
+ */
+exports.pageHost = '';
+
+/**
  * Default javascript path
  * @const
  */
@@ -111,6 +117,20 @@ exports.cssHost = '';
  * @const
  */
 exports.cssPath = '';
+
+/**
+ * Default crossOrigin
+ * @const
+ */
+exports.crossOrigin = '*';
+
+/**
+ * Default node modules path
+ * @const
+ */
+exports.nodeModulesPath = '/usr/local/lib/node_modules/';
+
+
 
 /**
  * Default enable access log

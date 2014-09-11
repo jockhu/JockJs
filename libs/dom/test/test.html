@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Tests </title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../../test/mocha.css" />
+</head>
+<body>
+<div id="mocha"></div>
+<script src="../../../test/mocha.js"></script>
+<script src="../../../test/chai.js"></script>
+<script>
+    var host = document.location.host.replace(/^\w+/,'jockjs'), src = 'http://'+host+'/ujs/base/dom.dom/test.js';
+    document.write('<script src="'+src+'"><\/scr'+'ipt>');
+</script>
+<script>
+    mocha.ui('bdd');
+    mocha.reporter('html');
+    var expect = chai.expect;
+</script>
+<script src="test.js"></script>
+<script>
+    if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
+    else { mocha.run(); }
+</script>
+</body>
+</html>
