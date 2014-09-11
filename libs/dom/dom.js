@@ -112,6 +112,7 @@
          */
         hasClass: function (className) {
             var element = this.get();
+            if(!element) return false;
             var elementClassName = element.className;
             return (elementClassName.length > 0 && (elementClassName == className ||
                 new RegExp("(^|\\s)" + className + "(\\s|$)").test(elementClassName)));
@@ -400,9 +401,9 @@
      * @return {*}
      */
     function fnExtNull(domElm){
-        domElm = domElm || g();
+        domElm = (domElm && domElm.length > 0) ? domElm : new elem();
         for(var f in fn){
-            (f !== 'length' && f !== 'get' && f !== 'val' && f !== 'html' && f !== 'attr') && (domElm[f] = function () {
+            (f !== 'length' && f !== 'get' && f !== 'val' && f !== 'html' && f !== 'attr' && f !== 'hasClass') && (domElm[f] = function () {
                 return domElm;
             });
         }
@@ -418,11 +419,14 @@
         for(var f in fn){
             (function(f){
                 (f !== 'length' && f !== 'get' && f !== 'eq' && f !== 's' && f !== 'each') && (domElms[f] = function () {
-                    var i = 0, length = domElms.length;
+                    //console.log(f, domElms)
+                    var i = 0, length = domElms.length, ret = undef, retv = false;
                     for (; i < length;) {
-                        g( domElms[i] )[f].apply(domElms[i++], arguments);
+                        ret = g( domElms[i] )[f].apply(domElms[i++], arguments);
+                        //console.log(f,ret,i)
+                        ret && (retv = ret);
                     }
-                    return domElms;
+                    return (retv || f === 'hasClass') ? retv : domElms;
                 })
             })(f);
         }
