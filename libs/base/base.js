@@ -111,7 +111,7 @@
             };
         });
         IS.isWindow = function( object ) {
-            return object && IS.isObject(object) && "setInterval" in object;
+            return object && object == object.window;
         };
         IS.isUndefined = function( object ){
             return object === U;
@@ -472,7 +472,13 @@
      * 打印调试日志
      */
     function log(){
-        var args = slice.call(arguments), cl = console;
+        var args = slice.call(arguments), cl;
+
+        try{
+            cl = console;
+        }catch(e){
+            cl = 0;
+        }
 
         /**
          * 获取字符串拼接的前缀 eq abc: 123
