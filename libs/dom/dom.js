@@ -386,7 +386,7 @@
 
     function g(id) {
         var domElm = new elem(id);
-        !domElm.length && fnExtNull(domElm);
+        !domElm.length && (domElm = fnExtNull(domElm));
         return domElm
     }
 
@@ -401,7 +401,7 @@
      * @return {*}
      */
     function fnExtNull(domElm){
-        domElm = (domElm && domElm.length > 0) ? domElm : new elem();
+        domElm = (domElm && domElm.length > 0) ? domElm : new elem('');
         for(var f in fn){
             (f !== 'length' && f !== 'get' && f !== 'val' && f !== 'html' && f !== 'attr' && f !== 'hasClass') && (domElm[f] = function () {
                 return domElm;
