@@ -130,7 +130,11 @@ exports.crossOrigin = '*';
  */
 exports.nodeModulesPath = '/usr/local/lib/node_modules/';
 
-
+/**
+ * Default node uglify file path
+ * @const
+ */
+exports.uglify = 'UglifyJS/uglify-js.js';
 
 /**
  * Default enable access log

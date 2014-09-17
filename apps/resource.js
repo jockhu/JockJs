@@ -16,7 +16,7 @@ var conf = require("../conf/config"),
             Log.error('User config rewrite error, ' + e.toString());
         }
     try{
-        uglify = require(conf.nodeModulesPath + "UglifyJS/uglify-js")
+        uglify = require(conf.nodeModulesPath + conf.uglify)
     }catch(e){
         Log.error('Uglify Js is not defined, ' + e.toString());
     }
