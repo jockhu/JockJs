@@ -33,7 +33,7 @@ J.un = J.event.un = function (element, type, handler) {
 
     var E = J.event, a = E.CACHE,  DA = E.DA, LO = E.LO, l = a.length, e, elmAll = !type, typeAll = !handler, isFire , rE = 'removeEventListener', dT = 'detachEvent';
 
-    if( !(element = E.g(element)) || element.length === 0 ) return false;
+    if( !(element = E.g(element)) ) return false;
 
     element = E.g(element);
 
