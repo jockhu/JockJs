@@ -448,7 +448,7 @@
             return id
         }
 
-        if (id = ( id && id.nodeType ) ? id : D.getElementById(id)) {
+        if (id != '' && (id = ( id && id.nodeType ) ? id : D.getElementById(id))) {
             this[0] = id;
             this.length = 1;
         }
