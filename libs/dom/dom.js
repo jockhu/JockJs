@@ -403,7 +403,7 @@
      * @return {*}
      */
     function fnExtNull(domElm){
-        domElm = (domElm && domElm.length > 0) ? domElm : new elem('');
+        domElm = (domElm && domElm.length > 0) ? domElm : new elem();//TODO:: changed new elem('') to new elem()
         for(var f in fn){
             (f !== 'length' && f !== 'get' && f !== 'val' && f !== 'html' && f !== 'attr' && f !== 'hasClass') && (domElm[f] = function () {
                 return domElm;
@@ -448,7 +448,7 @@
             return id
         }
 
-        if (id != '' && (id = ( id && id.nodeType ) ? id : D.getElementById(id))) {
+        if (id = ( id && id.nodeType ) ? id : D.getElementById(id)) {
             this[0] = id;
             this.length = 1;
         }
