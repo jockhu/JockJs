@@ -112,6 +112,7 @@
          */
         hasClass: function (className) {
             var element = this.get();
+            if(!element) return false;
             var elementClassName = element.className;
             return (elementClassName.length > 0 && (elementClassName == className ||
                 new RegExp("(^|\\s)" + className + "(\\s|$)").test(elementClassName)));
@@ -272,8 +273,9 @@
          * @param element 插入的元素
          */
         insertFirst: function (element) {
-            var first = this.first();
+            var first = this.first(true);
             first ? first.insertBefore(element) : this.append(element);
+
             return this;
         },
 
@@ -292,30 +294,31 @@
 
         /**
          * 获取目标元素的第一个元素节点
+         * @param unchain boolean: unchain
          */
-        first: function () {
-            return matchNode(this, 'nextSibling', 'firstChild');
+        first: function (unchain) {
+            return (! unchain) ? matchNode(this, 'nextSibling', 'firstChild') : matchRealNode(this, 'nextSibling', 'firstChild');
         },
 
         /**
          * 获取目标元素的最后一个元素节点
          */
-        last: function () {
-            return matchNode(this, 'previousSibling', 'lastChild');
+        last: function (unchain) {
+            return (! unchain) ? matchNode(this, 'previousSibling', 'lastChild') : matchRealNode(this, 'previousSibling', 'lastChild');
         },
 
         /**
          * 获取目标元素的下一个兄弟元素节点
          */
-        next: function () {
-            return matchNode(this, 'nextSibling', 'nextSibling');
+        next: function (unchain) {
+            return (! unchain) ? matchNode(this, 'nextSibling', 'nextSibling') : matchRealNode(this, 'nextSibling', 'nextSibling');
         },
 
         /**
          * 获取目标元素的上一个兄弟元素节点
          */
-        prev: function () {
-            return matchNode(this, 'previousSibling', 'previousSibling');
+        prev: function (unchain) {
+            return (! unchain) ? matchNode(this, 'previousSibling', 'previousSibling') : matchRealNode(this, 'previousSibling', 'previousSibling');
         },
 
         /**
@@ -385,7 +388,7 @@
 
     function g(id) {
         var domElm = new elem(id);
-        !domElm.length && fnExtNull(domElm);
+        !domElm.length && (domElm = fnExtNull(domElm));
         return domElm
     }
 
@@ -400,9 +403,9 @@
      * @return {*}
      */
     function fnExtNull(domElm){
-        domElm = domElm || g();
+        domElm = (domElm && domElm.length > 0) ? domElm : new elem();//TODO:: changed new elem('') to new elem()
         for(var f in fn){
-            (f !== 'length' && f !== 'get' && f !== 'val' && f !== 'html' && f !== 'attr') && (domElm[f] = function () {
+            (f !== 'length' && f !== 'get' && f !== 'val' && f !== 'html' && f !== 'attr' && f !== 'hasClass') && (domElm[f] = function () {
                 return domElm;
             });
         }
@@ -418,11 +421,14 @@
         for(var f in fn){
             (function(f){
                 (f !== 'length' && f !== 'get' && f !== 'eq' && f !== 's' && f !== 'each') && (domElms[f] = function () {
-                    var i = 0, length = domElms.length;
+                    //console.log(f, domElms)
+                    var i = 0, length = domElms.length, ret = undef, retv = false;
                     for (; i < length;) {
-                        g( domElms[i] )[f].apply(domElms[i++], arguments);
+                        ret = g( domElms[i] )[f].apply(domElms[i++], arguments);
+                        //console.log(f,ret,i)
+                        ret && (retv = ret);
                     }
-                    return domElms;
+                    return (retv || f === 'hasClass') ? retv : domElms;
                 })
             })(f);
         }
@@ -519,6 +525,14 @@
 
     function getRealElement(element) {
         return J.isString(element) ? dom(element) : element
+    }
+
+    function matchRealNode(element, direction, start) {
+        for (var node = element.get()[start]; node; node = node[direction]) {
+            if (node.nodeType == 1) {
+                return g(node);
+            }
+        }
     }
 
     function matchNode(element, direction, start) {
