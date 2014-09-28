@@ -592,7 +592,7 @@
         // J.sizzle
         if (J.sizzle) return merge(this, J.sizzle(selector, element));
 
-        var match = selector ? selector.match(/^(\.)?(\w+)(\s(\w+))?/) : null, result = [], len, i, elements, node, tagName;
+        var match = selector ? selector.match(/^(\.)?([a-zA-Z0-9_-]+)(\s([a-zA-Z0-9_-]+))?/) : null, result = [], len, i, elements, node, tagName;
         element = element || D;
 
         // div       -> [  "div"  ,   undefined  ,   "div"  ,   undefined  ,   undefined  ]
